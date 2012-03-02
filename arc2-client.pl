@@ -49,7 +49,8 @@ print "\n";
 print "Choose a person (number from the list above): ";
 my $chosen_person = <>;
 print "You chose person number $chosen_person";
-print "Name: ", $missing_persons[$chosen_person]->{'name'}, "\n";
+my $uninverted_name = uninvert($missing_persons[$chosen_person]->{'name'});
+print "Name: ", $missing_persons[$chosen_person]->{'name'}, " / $uninverted_name\n";
 print "URI:  ", $missing_persons[$chosen_person]->{'uri'}, "\n";
 print "\n";
 
@@ -64,18 +65,30 @@ foreach my $i (@person_info) {
   if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
   print "\n";
 }
+print "\n";
 
 # STEP 4
 # Look up data from external sources
-# Rådata nå!
-# VIAF
-# Open Library
+  
+my $sameasdata = get_sameas_for_person($missing_persons[$chosen_person]->{'name'}, $uninverted_name);
 
 # STEP 5
 # Let the user choose which relations/data to import
+# TODO The actual choosing...
+
+foreach my $sameasuri ( keys %{ $sameasdata } ) {
+  print "$sameasuri\n";
+}
+print "\n";
 
 # STEP 6
 # Update the triplestore with the chosen data
+
+foreach my $sameasuri ( keys %{ $sameasdata } ) {
+  print "$sameasuri\n";
+  get_sameas_data($sameasuri);
+}
+print "\n";
 
 # foreach my $d ( @{ $data } ) {
 #   my $uri = $d->{'o'}->{'value'};
@@ -85,6 +98,57 @@ foreach my $i (@person_info) {
 # }
 
 # Subroutines
+
+sub get_sameas_data {
+
+  my $uri = shift;
+  
+  # TODO Save the sameAs relation
+  
+  # TODO LOAD the remote graph
+
+}
+
+sub get_sameas_for_person {
+
+  my $name1 = shift;
+  my $name2 = shift;
+  
+  # Rådata nå!
+  my $query = '
+PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT * WHERE {
+  { ?s foaf:name "' . $name1 . '" .
+  ?s owl:sameAs ?o . }
+  UNION
+  { ?s foaf:name "' . $name2 . '" .
+  ?s owl:sameAs ?o . }
+}';
+  print $query if $debug;
+  my $data = sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
+  my %out;
+  foreach my $t ( @{$data} ) {
+    $out{$t->{'s'}->{'value'}}++;
+    $out{$t->{'o'}->{'value'}}++;
+  }
+
+  # TODO VIAF
+  # TODO Open Library
+
+  return \%out;
+
+}
+
+sub uninvert {
+  my $orig = shift;
+  if ( $orig =~ m/,/ ) {
+    my ($first, $second) = split ', ', $orig;
+    return "$second $first";
+  } else {
+    return $orig;
+  }
+}
 
 sub get_info_about_uri {
  
