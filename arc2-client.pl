@@ -1,5 +1,10 @@
 #!/usr/bin/perl -w 
 
+# This script is a proof-of-concept that aims to uncover:
+# - A workflow for enhancing data converted from bibliographic records to RDF 
+#   and stored in a triplestore with data from other source
+# - The SPARQL-queries involved in that process
+
 use CGI qw/:standard/;
 use LWP::UserAgent;
 use URI;
@@ -15,10 +20,30 @@ my $key      = 'password';
 
 my ($debug) = get_options();
 
+# STEP 1
+# Get all the persons that have not been enhanced with external data
+
 my @missing_persons = get_person_without_sameas(3);
+
+# STEP 2
+# Let the user choose one person to focus on
+
 print join( "\n", @missing_persons ), "\n";
 
-# show_data('SELECT * WHERE { <http://esme.priv.bibkat.no/records/id_2> ?p ?o . }');
+# STEP 3
+# Display all known info about the chosen person
+
+# STEP 4
+# Look up data from external sources
+# Rådata nå!
+# VIAF
+# Open Library
+
+# STEP 5
+# Let the user choose which relations/data to import
+
+# STEP 6
+# Update the triplestore with the chosen data
 
 # foreach my $d ( @{ $data } ) {
 #   my $uri = $d->{'o'}->{'value'};
