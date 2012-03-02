@@ -135,12 +135,14 @@ sub save_sameas_data {
 }';
   print $query if $debug;
   my $data=sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  # TODO Check the results of this operation
   print Dumper $data if $debug;
   
   # LOAD the remote graph
   my $loadquery = "LOAD <$newuri>";
   print $loadquery if $debug;
   my $loaddata=sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  # TODO Check the results of this operation
   print Dumper $loaddata if $debug;
 
   # TODO Check if the LOADed data gave us some more sameAs relations
