@@ -90,7 +90,39 @@ foreach my $sameasuri ( keys %{ $sameasdata } ) {
 }
 print "\n";
 
+# STEP 7
+# Display all the data we now have for the chosen person
+print "Here is what we know now:";
+my @datawithsameas = get_data_with_sameas($missing_persons[$chosen_person]->{'uri'});
+foreach my $i (@datawithsameas) {
+  if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
+  if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+  print "\n";
+}
+print "\n";
+
 # Subroutines
+
+sub get_data_with_sameas {
+
+my $uri = shift;
+
+  my $query = '
+SELECT ?p ?o WHERE {
+  <' . $uri . '> owl:sameAs ?id . 
+  ?id ?p ?o .
+}';
+  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my @out;
+  foreach my $t ( @{$data} ) {
+    my %data;
+    $data{'p'} = $t->{'p'}->{'value'};
+    $data{'o'} = $t->{'o'}->{'value'};
+    push(@out, \%data);
+  }
+  return @out;
+
+}
 
 sub save_sameas_data {
 
@@ -103,13 +135,13 @@ sub save_sameas_data {
 }';
   print $query if $debug;
   my $data=sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
-  print Dumper($data) if $debug;
+  print Dumper $data if $debug;
   
   # LOAD the remote graph
   my $loadquery = "LOAD <$newuri>";
   print $loadquery if $debug;
   my $loaddata=sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
-  print Dumper($loaddata) if $debug;
+  print Dumper $loaddata if $debug;
 
   # TODO Check if the LOADed data gave us some more sameAs relations
   # SELECT * WHERE {
