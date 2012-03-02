@@ -111,6 +111,12 @@ sub save_sameas_data {
   my $loaddata=sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
   print Dumper($loaddata) if $debug;
 
+  # TODO Check if the LOADed data gave us some more sameAs relations
+  # SELECT * WHERE {
+  #   <http://data.deichman.no/person/Schwartz_Randal_L> owl:sameAs ?id . 
+  #   ?id owl:sameAs ?o .
+  # }
+
 }
 
 sub get_sameas_for_person {
