@@ -10,6 +10,10 @@ base_url_key: 'password'
 # The default graph of the base_url
 default_graph: 'http://example.org/records/'
 
+# Graph for storing the enhancement data that are the result of
+# human intervention
+enh_graph: 'http://example.org/enh/'
+
 # How many people without sameAs should we let the user choose from? 
 person_without_sameas_limit: 10
 

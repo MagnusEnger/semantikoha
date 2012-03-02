@@ -86,26 +86,30 @@ print "\n";
 
 foreach my $sameasuri ( keys %{ $sameasdata } ) {
   print "$sameasuri\n";
-  get_sameas_data($sameasuri);
+  save_sameas_data($sameasuri, $missing_persons[$chosen_person]->{'uri'});
 }
 print "\n";
 
-# foreach my $d ( @{ $data } ) {
-#   my $uri = $d->{'o'}->{'value'};
-#   my $query="LOAD <$uri>";
-#   my $data=sparqlQuery($query, $base_url, 'post');
-#   print Dumper($data) if $debug;
-# }
-
 # Subroutines
 
-sub get_sameas_data {
+sub save_sameas_data {
 
-  my $uri = shift;
+  my $newuri = shift;
+  my $olduri = shift;
   
-  # TODO Save the sameAs relation
+  # Save the sameAs relation
+  my $query = 'INSERT INTO <' . $config->{'enh_graph'} . '> {
+<' . $olduri . '> owl:sameAs <' . $newuri . '> .  
+}';
+  print $query if $debug;
+  my $data=sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  print Dumper($data) if $debug;
   
-  # TODO LOAD the remote graph
+  # LOAD the remote graph
+  my $loadquery = "LOAD <$newuri>";
+  print $loadquery if $debug;
+  my $loaddata=sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  print Dumper($loaddata) if $debug;
 
 }
 
