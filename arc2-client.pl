@@ -44,15 +44,26 @@ foreach my $p ( @missing_persons ) {
   print $person_count, " ", $p->{'name'}, "\t", $p->{'uri'}, "\n";
   $person_count++;
 }
+print "\n";
 
 print "Choose a person (number from the list above): ";
 my $chosen_person = <>;
 print "You chose person number $chosen_person";
 print "Name: ", $missing_persons[$chosen_person]->{'name'}, "\n";
 print "URI:  ", $missing_persons[$chosen_person]->{'uri'}, "\n";
+print "\n";
 
 # STEP 3
 # Display all known info about the chosen person
+
+print "Here is what we know about " . $missing_persons[$chosen_person]->{'name'}, ":\n";
+my @person_info = get_info_about_uri($missing_persons[$chosen_person]->{'uri'});
+foreach my $i (@person_info) {
+  if ( $i->{'s'} ) { print $i->{'s'}, " "; } 
+  if ( $i->{'p'} ) { print $i->{'p'}, " "; }
+  if ( $i->{'o'} ) { print $i->{'o'}; }
+  print "\n";
+}
 
 # STEP 4
 # Look up data from external sources
@@ -74,6 +85,28 @@ print "URI:  ", $missing_persons[$chosen_person]->{'uri'}, "\n";
 # }
 
 # Subroutines
+
+sub get_info_about_uri {
+ 
+  my $uri = shift;
+
+  my $query = '
+SELECT * { 
+  { <' . $uri . '> ?p ?o } 
+  UNION 
+  { ?s ?p <' . $uri . '> } 
+}';
+  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my @out;
+  foreach my $t ( @{$data} ) {
+    my %triple;
+    $triple{'s'} = $t->{'s'}->{'value'};
+    $triple{'p'} = $t->{'p'}->{'value'};
+    $triple{'o'} = $t->{'o'}->{'value'};
+    push(@out, \%triple);
+  }
+  return @out;
+}
 
 sub get_person_without_sameas {
 
