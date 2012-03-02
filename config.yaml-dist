@@ -7,6 +7,9 @@ base_url: 'http://example.org/sparql/'
 # to do operations that change data
 base_url_key: 'password'
 
+# The default graph of the base_url
+default_graph: 'http://example.org/records/'
+
 # How many people without sameAs should we let the user choose from? 
 person_without_sameas_limit: 10
 

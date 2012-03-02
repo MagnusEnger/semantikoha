@@ -70,10 +70,12 @@ sub get_person_without_sameas {
   my $query = '
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?s WHERE {
-  ?s a foaf:Person .
-  OPTIONAL { ?s owl:sameAs ?id . }
-  FILTER(!bound(?id))
-} 
+  GRAPH <' . $config->{'default_graph'} . '> {
+    ?s a foaf:Person .
+    OPTIONAL { ?s owl:sameAs ?id . }
+    FILTER(!bound(?id))
+  }
+}
 LIMIT ' . $config->{'person_without_sameas_limit'};
 
   my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
