@@ -7,4 +7,6 @@ base_url: 'http://example.org/sparql/'
 # to do operations that change data
 base_url_key: 'password'
 
+# How many people without sameAs should we let the user choose from? 
+person_without_sameas_limit: 10
 

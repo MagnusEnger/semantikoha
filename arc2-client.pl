@@ -34,7 +34,7 @@ my ($config) = LoadFile($configfile);
 # STEP 1
 # Get all the persons that have not been enhanced with external data
 
-my @missing_persons = get_person_without_sameas(3);
+my @missing_persons = get_person_without_sameas();
 
 # STEP 2
 # Let the user choose one person to focus on
@@ -67,9 +67,6 @@ print join( "\n", @missing_persons ), "\n";
 
 sub get_person_without_sameas {
 
-  my $limit = 10;
-  $limit = shift;
-
   my $query = '
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?s WHERE {
@@ -77,7 +74,7 @@ SELECT ?s WHERE {
   OPTIONAL { ?s owl:sameAs ?id . }
   FILTER(!bound(?id))
 } 
-LIMIT ' . $limit;
+LIMIT ' . $config->{'person_without_sameas_limit'};
 
   my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   my @out;
