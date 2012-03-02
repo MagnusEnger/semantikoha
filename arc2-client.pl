@@ -10,15 +10,26 @@ use LWP::UserAgent;
 use URI;
 use Data::Dumper;
 use JSON;
+use YAML::Syck qw'LoadFile';
 use Getopt::Long;
 use Pod::Usage;
 use Modern::Perl;
 use diagnostics;
 
-my $base_url = 'http://data.libriotech.no/semantikoha/';
-my $key      = 'password';
+my ($configfile, $debug) = get_options();
 
-my ($debug) = get_options();
+# Check that the YAML config file actually exists
+if ( $configfile ne '' && !-e $configfile) {
+  die "Couldn't find YAML file $configfile\n";
+}
+if ( -e 'config.yaml' ) {
+  # Use the default config file if one is not given on the command line
+  $configfile = 'config.yaml';
+}
+print "YAML: $configfile\n" if $debug;
+
+# Read the YAML file
+my ($config) = LoadFile($configfile);
 
 # STEP 1
 # Get all the persons that have not been enhanced with external data
@@ -68,7 +79,7 @@ SELECT ?s WHERE {
 } 
 LIMIT ' . $limit;
 
-  my $data = sparqlQuery($query, $base_url, 'get');
+  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   my @out;
   foreach my $p ( @{$data} ) {
     push(@out, $p->{'s'}->{'value'});
@@ -78,19 +89,20 @@ LIMIT ' . $limit;
 
 sub show_data {
   my $query = shift;
-  my $data=sparqlQuery($query, $base_url, 'get');
+  my $data=sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   print Dumper($data);
 }
 
 sub sparqlQuery {
-  my $sparql  = shift;
-  my $baseURL = shift;
-  my $method  = shift;
+  my $sparql     = shift;
+  my $baseURL    = shift;
+  my $baseURLkey = shift;
+  my $method     = shift;
 
   my %params=(
     'query'  => $sparql,
     'output' => 'json',
-    'key'    => $key,
+    'key'    => $baseURLkey,
   );
 
   my $ua = LWP::UserAgent->new;
@@ -121,15 +133,17 @@ sub sparqlQuery {
 
 # Get commandline options
 sub get_options {
-  my $debug = '';
-  my $help  = '';
+  my $config = '';
+  my $debug  = '';
+  my $help   = '';
 
   GetOptions(
-    'd|debug!' => \$debug,
-    'h|?|help' => \$help
+    'c|config=s' => \$config, 
+    'd|debug!'   => \$debug,
+    'h|?|help'   => \$help
   );
   
   pod2usage(-exitval => 0) if $help;
 
-  return ($debug);
+  return ($config, $debug);
 }

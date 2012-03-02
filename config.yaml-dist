@@ -1,0 +1,10 @@
+---
+
+# SPARQL endpoint
+base_url: 'http://example.org/sparql/'
+
+# If the endpoint is provided by ARC2, you will probably need a key to be able
+# to do operations that change data
+base_url_key: 'password'
+
+
