@@ -45,6 +45,12 @@ foreach my $p ( @missing_persons ) {
   $person_count++;
 }
 
+print "Choose a person (number from the list above): ";
+my $chosen_person = <>;
+print "You chose person number $chosen_person";
+print "Name: ", $missing_persons[$chosen_person]->{'name'}, "\n";
+print "URI:  ", $missing_persons[$chosen_person]->{'uri'}, "\n";
+
 # STEP 3
 # Display all known info about the chosen person
 
