@@ -59,9 +59,9 @@ print "\n";
 print "Here is what we know about " . $missing_persons[$chosen_person]->{'name'}, ":\n";
 my @person_info = get_info_about_uri($missing_persons[$chosen_person]->{'uri'});
 foreach my $i (@person_info) {
-  if ( $i->{'s'} ) { print $i->{'s'}, " "; } 
-  if ( $i->{'p'} ) { print $i->{'p'}, " "; }
-  if ( $i->{'o'} ) { print $i->{'o'}; }
+  if ( $i->{'s'} ) { print "<", $i->{'s'}, "> "; } 
+  if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
+  if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
   print "\n";
 }
 
