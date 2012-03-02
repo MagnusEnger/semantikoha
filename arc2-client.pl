@@ -175,6 +175,11 @@ SELECT * WHERE {
     $out{$t->{'o'}->{'value'}}++;
   }
 
+  my $count = keys %out;
+  if ( $count == 0 ) {
+    die "No sameAs found in Rådata nå!";
+  }
+
   # TODO VIAF
   # TODO Open Library
 
