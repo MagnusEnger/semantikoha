@@ -39,7 +39,11 @@ my @missing_persons = get_person_without_sameas();
 # STEP 2
 # Let the user choose one person to focus on
 
-print join( "\n", @missing_persons ), "\n";
+my $person_count = 0;
+foreach my $p ( @missing_persons ) {
+  print $person_count, " ", $p->{'name'}, "\t", $p->{'uri'}, "\n";
+  $person_count++;
+}
 
 # STEP 3
 # Display all known info about the chosen person
@@ -69,10 +73,11 @@ sub get_person_without_sameas {
 
   my $query = '
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT ?s WHERE {
+SELECT ?uri ?name WHERE {
   GRAPH <' . $config->{'default_graph'} . '> {
-    ?s a foaf:Person .
-    OPTIONAL { ?s owl:sameAs ?id . }
+    ?uri a foaf:Person .
+    OPTIONAL { ?uri foaf:name ?name . }
+    OPTIONAL { ?uri owl:sameAs ?id . }
     FILTER(!bound(?id))
   }
 }
@@ -81,7 +86,10 @@ LIMIT ' . $config->{'person_without_sameas_limit'};
   my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   my @out;
   foreach my $p ( @{$data} ) {
-    push(@out, $p->{'s'}->{'value'});
+    my %person;
+    $person{'uri'} = $p->{'uri'}->{'value'};
+    $person{'name'} = $p->{'name'}->{'value'};
+    push(@out, \%person);
   }
   return @out;
 }
