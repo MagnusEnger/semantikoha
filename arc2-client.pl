@@ -35,6 +35,11 @@ my ($config) = LoadFile($configfile);
 # Get all the persons that have not been enhanced with external data
 
 my @missing_persons = get_person_without_sameas();
+my $missing_count = @missing_persons;
+if ( $missing_count == 0 ) {
+  print "ERROR! No missing persons found!\n";
+  exit;
+} 
 
 # STEP 2
 # Let the user choose one person to focus on
