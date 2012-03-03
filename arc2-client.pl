@@ -74,30 +74,97 @@ print "\n";
 
 # STEP 4
 # Look up data from external sources
+
+# TODO Add more sources
+# VIAF
+# Open Library
+# etc
+
+my %waiting_uri;
+my %done_uri;
+
+# Rådata nå!
+my $query = '
+PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT DISTINCT ?s WHERE {
+  { ?s foaf:name "' . $missing_persons[$chosen_person]->{'name'} . '" . }
+UNION
+  { ?s foaf:name "' . $uninverted_name . '" . }
+}';
+print $query if $debug;
+my $data = sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
+foreach my $t ( @{$data} ) {
+  $waiting_uri{$t->{'s'}->{'value'}}++;
+}
+
+my $count = keys %waiting_uri;
+if ( $count == 0 ) {
+  print "No sameAs found in Rådata nå!\n";
+  exit;
+}
+
+foreach my $uri ( keys %waiting_uri ) {
+  print "$uri\n" if $debug;
+  process_sameas_uri($uri, $missing_persons[$chosen_person]->{'uri'});
+}
+
+sub process_sameas_uri {
+
+  my $newuri = shift;
+  my $olduri = shift;
+
+  # TODO Let the user choose to proceed with this URI or not
+
+  # STEP 5
+  # Save the sameAs relation
+  print "Saving sameAs for $newuri\n" if $debug;
+  my $query = 'INSERT INTO <' . $config->{'enh_graph'} . '> {
+<' . $olduri . '> owl:sameAs <' . $newuri . '> .  
+}';
+  print $query if $debug;
+  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  # TODO Check the results of this operation
+  print Dumper $data if $debug;
   
-my $sameasdata = get_sameas_for_person($missing_persons[$chosen_person]->{'name'}, $uninverted_name);
+  # STEP 6
+  # LOAD the remote graph
+  print "Loading $newuri\n" if $debug;
+  my $loadquery = "LOAD <$newuri>";
+  print $loadquery if $debug;
+  my $loaddata = sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  # TODO Check the results of this operation
+  print Dumper $loaddata if $debug;
 
-# STEP 5
-# Let the user choose which relations/data to import
-# TODO The actual choosing...
+  $done_uri{$newuri}++;
 
-foreach my $sameasuri ( keys %{ $sameasdata } ) {
-  print "$sameasuri\n";
+  # STEP 7
+  # Get sameAs from the LOADed graph
+  print "Checking for new sameAs from $newuri\n" if $debug;
+  my $sameasquery = '
+  SELECT ?o WHERE {
+  GRAPH <' . $newuri . '> { <' . $newuri . '> owl:sameAs ?o . }
+  }';
+  print $sameasquery if $debug;
+  my $sameasdata = sparqlQuery($sameasquery, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  print Dumper $sameasdata if $debug;
+  my $sameascount = @{$sameasdata};
+  print "Found $sameascount sameAs\n" if $debug;
+  foreach my $s ( @{$sameasdata} ) {
+    print "Checking: ", $s->{'o'}->{'value'}, "\n" if $debug;
+    if ( !exists $done_uri{$s->{'o'}->{'value'}} ) {
+      print "Found ", $s->{'o'}->{'value'}, "\n" if $debug;
+      process_sameas_uri( $s->{'o'}->{'value'}, $olduri );
+    } else {
+      print "Skipping ", $s->{'o'}->{'value'}, "\n" if $debug;
+    }
+  }
+  
 }
-print "\n";
 
-# STEP 6
-# Update the triplestore with the chosen data
-
-foreach my $sameasuri ( keys %{ $sameasdata } ) {
-  print "$sameasuri\n";
-  save_sameas_data($sameasuri, $missing_persons[$chosen_person]->{'uri'});
-}
-print "\n";
-
-# STEP 7
+# STEP 8
 # Display all the data we now have for the chosen person
-print "Here is what we know now:";
+print "Here is what we know now:\n";
 my @datawithsameas = get_data_with_sameas($missing_persons[$chosen_person]->{'uri'});
 foreach my $i (@datawithsameas) {
   if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
@@ -134,64 +201,6 @@ sub save_sameas_data {
   my $newuri = shift;
   my $olduri = shift;
   
-  # Save the sameAs relation
-  my $query = 'INSERT INTO <' . $config->{'enh_graph'} . '> {
-<' . $olduri . '> owl:sameAs <' . $newuri . '> .  
-}';
-  print $query if $debug;
-  my $data=sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
-  # TODO Check the results of this operation
-  print Dumper $data if $debug;
-  
-  # LOAD the remote graph
-  my $loadquery = "LOAD <$newuri>";
-  print $loadquery if $debug;
-  my $loaddata=sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
-  # TODO Check the results of this operation
-  print Dumper $loaddata if $debug;
-
-  # TODO Check if the LOADed data gave us some more sameAs relations
-  # SELECT * WHERE {
-  #   <http://data.deichman.no/person/Schwartz_Randal_L> owl:sameAs ?id . 
-  #   ?id owl:sameAs ?o .
-  # }
-
-}
-
-sub get_sameas_for_person {
-
-  my $name1 = shift;
-  my $name2 = shift;
-  
-  # Rådata nå!
-  my $query = '
-PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-SELECT * WHERE {
-  { ?s foaf:name "' . $name1 . '" .
-  ?s owl:sameAs ?o . }
-  UNION
-  { ?s foaf:name "' . $name2 . '" .
-  ?s owl:sameAs ?o . }
-}';
-  print $query if $debug;
-  my $data = sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
-  my %out;
-  foreach my $t ( @{$data} ) {
-    $out{$t->{'s'}->{'value'}}++;
-    $out{$t->{'o'}->{'value'}}++;
-  }
-
-  my $count = keys %out;
-  if ( $count == 0 ) {
-    die "No sameAs found in Rådata nå!";
-  }
-
-  # TODO VIAF
-  # TODO Open Library
-
-  return \%out;
-
 }
 
 sub uninvert {
