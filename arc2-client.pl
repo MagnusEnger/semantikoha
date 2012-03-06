@@ -16,7 +16,7 @@ use Pod::Usage;
 use Modern::Perl;
 use diagnostics;
 
-my ($configfile, $debug) = get_options();
+my ($configfile, $sameas, $debug) = get_options();
 
 # Check that the YAML config file actually exists
 if ( $configfile ne '' && !-e $configfile) {
@@ -118,11 +118,11 @@ sub process_sameas_uri {
 
   # STEP 5
   # Save the sameAs relation
-  print "Saving sameAs for $newuri\n" if $debug;
+  print "Saving sameAs for $newuri\n" if $debug || $sameas;
   my $query = 'INSERT INTO <' . $config->{'enh_graph'} . '> {
 <' . $olduri . '> owl:sameAs <' . $newuri . '> .  
 }';
-  print $query if $debug;
+  print $query if $debug || $sameas;
   my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
   # TODO Check the results of this operation
   print Dumper $data if $debug;
@@ -145,7 +145,7 @@ sub process_sameas_uri {
   SELECT ?o WHERE {
   GRAPH <' . $newuri . '> { <' . $newuri . '> owl:sameAs ?o . }
   }';
-  print $sameasquery if $debug;
+  print $sameasquery, "\n" if $debug;
   my $sameasdata = sparqlQuery($sameasquery, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   print Dumper $sameasdata if $debug;
   my $sameascount = @{$sameasdata};
@@ -175,7 +175,7 @@ print "\n";
 
 # Subroutines
 
-sub get_data_with_sameas {
+sub get_data_with_sameas { 
 
 my $uri = shift;
 
@@ -196,13 +196,6 @@ SELECT ?p ?o WHERE {
 
 }
 
-sub save_sameas_data {
-
-  my $newuri = shift;
-  my $olduri = shift;
-  
-}
-
 sub uninvert {
   my $orig = shift;
   if ( $orig =~ m/,/ ) {
@@ -213,7 +206,7 @@ sub uninvert {
   }
 }
 
-sub get_info_about_uri {
+sub get_info_about_uri { 
  
   my $uri = shift;
 
@@ -235,7 +228,7 @@ SELECT * {
   return @out;
 }
 
-sub get_person_without_sameas {
+sub get_person_without_sameas { 
 
   my $query = '
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -258,12 +251,6 @@ LIMIT ' . $config->{'person_without_sameas_limit'};
     push(@out, \%person);
   }
   return @out;
-}
-
-sub show_data {
-  my $query = shift;
-  my $data=sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
-  print Dumper($data);
 }
 
 sub sparqlQuery {
@@ -307,16 +294,18 @@ sub sparqlQuery {
 # Get commandline options
 sub get_options {
   my $config = '';
+  my $sameas = '';
   my $debug  = '';
   my $help   = '';
 
   GetOptions(
     'c|config=s' => \$config, 
+    's|sameas!'  => \$sameas,
     'd|debug!'   => \$debug,
     'h|?|help'   => \$help
   );
   
   pod2usage(-exitval => 0) if $help;
 
-  return ($config, $debug);
+  return ($config, $sameas, $debug);
 }
