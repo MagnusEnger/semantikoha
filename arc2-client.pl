@@ -134,7 +134,7 @@ sub process_sameas_uri {
   print $loadquery if $debug;
   my $loaded = sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
   # TODO Check the results of this operation
-  print "Loaded $loaded triples\n";
+  print "Loaded $loaded triples from $newuri\n";
 
   $done_uri{$newuri}++;
 
@@ -164,14 +164,16 @@ sub process_sameas_uri {
 
 # STEP 8
 # Display all the data we now have for the chosen person
-print "Here is what we know now:\n";
-my @datawithsameas = get_data_with_sameas($missing_persons[$chosen_person]->{'uri'});
-foreach my $i (@datawithsameas) {
-  if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
-  if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+if ( $debug ) {
+  print "Here is what we know now:\n";
+  my @datawithsameas = get_data_with_sameas($missing_persons[$chosen_person]->{'uri'});
+  foreach my $i (@datawithsameas) {
+    if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
+    if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+    print "\n";
+  }
   print "\n";
 }
-print "\n";
 
 # Subroutines
 
