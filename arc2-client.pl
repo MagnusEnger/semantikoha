@@ -132,9 +132,9 @@ sub process_sameas_uri {
   print "Loading $newuri\n" if $debug;
   my $loadquery = "LOAD <$newuri>";
   print $loadquery if $debug;
-  my $loaddata = sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  my $loaded = sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
   # TODO Check the results of this operation
-  print Dumper $loaddata if $debug;
+  print "Loaded $loaded triples\n";
 
   $done_uri{$newuri}++;
 
@@ -287,6 +287,10 @@ sub sparqlQuery {
   print Dumper $str if $debug;
   
   my $data = decode_json($str);
+
+  if ( $sparql =~ m/^load/i ) {
+    return $data->{'inserted'};
+  }
   
   return $data->{'results'}->{'bindings'};
 }
