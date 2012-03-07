@@ -16,7 +16,7 @@ use Pod::Usage;
 use Modern::Perl;
 use diagnostics;
 
-my ($configfile, $sameas, $debug) = get_options();
+my ($configfile, $interactive, $sameas, $debug) = get_options();
 
 # Check that the YAML config file actually exists
 if ( $configfile ne '' && !-e $configfile) {
@@ -41,72 +41,94 @@ if ( $missing_count == 0 ) {
   exit;
 } 
 
-# STEP 2
-# Let the user choose one person to focus on
+if ( $interactive ) {
 
-my $person_count = 0;
-foreach my $p ( @missing_persons ) {
-  print $person_count, " ", $p->{'name'}, "\t", $p->{'uri'}, "\n";
-  $person_count++;
-}
-print "\n";
+  # STEP 2
+  # Let the user choose one person to focus on
 
-print "Choose a person (number from the list above): ";
-my $chosen_person = <>;
-print "You chose person number $chosen_person";
-my $uninverted_name = uninvert($missing_persons[$chosen_person]->{'name'});
-print "Name: ", $missing_persons[$chosen_person]->{'name'}, " / $uninverted_name\n";
-print "URI:  ", $missing_persons[$chosen_person]->{'uri'}, "\n";
-print "\n";
-
-# STEP 3
-# Display all known info about the chosen person
-
-print "Here is what we know about " . $missing_persons[$chosen_person]->{'name'}, ":\n";
-my @person_info = get_info_about_uri($missing_persons[$chosen_person]->{'uri'});
-foreach my $i (@person_info) {
-  if ( $i->{'s'} ) { print "<", $i->{'s'}, "> "; } 
-  if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
-  if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+  my $person_count = 0;
+  foreach my $p ( @missing_persons ) {
+    print $person_count, " ", $p->{'name'}, "\t", $p->{'uri'}, "\n";
+    $person_count++;
+  }
   print "\n";
+
+  print "Choose a person (number from the list above): ";
+  my $chosen_person = <>;
+  print "You chose person number $chosen_person";
+  my $missing_person = $missing_persons[$chosen_person];
+  print "Name: ", $missing_person->{'name'}, "\n";
+  print "URI:  ", $missing_person->{'uri'}, "\n";
+  print "\n";
+
+  # STEP 3
+  # Display all known info about the chosen person
+
+  print "Here is what we know about " . $missing_person->{'name'}, ":\n";
+  my @person_info = get_info_about_uri($missing_person->{'uri'});
+  foreach my $i (@person_info) {
+    if ( $i->{'s'} ) { print "<", $i->{'s'}, "> "; } 
+    if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
+    if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+    print "\n";
+  }
+  print "\n";
+
+  # FIXME
+  # Make sure $missing_person is the only element in @missing_persons
+
 }
-print "\n";
-
-# STEP 4
-# Look up data from external sources
-
-# TODO Add more sources
-# VIAF
-# Open Library
-# etc
 
 my %waiting_uri;
 my %done_uri;
 
-# Rådata nå!
-my $query = '
-PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-SELECT DISTINCT ?s WHERE {
-  { ?s foaf:name "' . $missing_persons[$chosen_person]->{'name'} . '" . }
-UNION
-  { ?s foaf:name "' . $uninverted_name . '" . }
-}';
-print $query if $debug;
-my $data = sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
-foreach my $t ( @{$data} ) {
-  $waiting_uri{$t->{'s'}->{'value'}}++;
-}
+foreach my $missing_person (@missing_persons) {
 
-my $count = keys %waiting_uri;
-if ( $count == 0 ) {
-  print "No sameAs found in Rådata nå!\n";
-  exit;
-}
+  # STEP 4
+  # Look up data from external sources
 
-foreach my $uri ( keys %waiting_uri ) {
-  print "$uri\n" if $debug;
-  process_sameas_uri($uri, $missing_persons[$chosen_person]->{'uri'});
+  my $uninverted_name = uninvert($missing_person->{'name'});
+  
+  # Rådata nå!
+  my $query = '
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  SELECT DISTINCT ?s WHERE {
+    { ?s foaf:name "' . $missing_person->{'name'} . '" . }
+  UNION
+    { ?s foaf:name "' . $uninverted_name . '" . }
+  }';
+  print $query if $debug;
+  my $data = sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
+  foreach my $t ( @{$data} ) {
+    $waiting_uri{$t->{'s'}->{'value'}}++;
+    print "Waiting: ", $t->{'s'}->{'value'}, "\n";
+  }
+
+  # TODO Add more sources
+  # VIAF
+  # Open Library
+  # etc
+
+  my $count = keys %waiting_uri;
+  if ( $count == 0 ) {
+    print "No sameAs found in!\n";
+    next;
+  }
+
+  foreach my $uri ( keys %waiting_uri ) {
+    print "$uri\n" if $debug;
+    process_sameas_uri($uri, $missing_person->{'uri'});
+  }
+
+  # Empty the hashes for another go-round
+  for (keys %waiting_uri) {
+    delete $waiting_uri{$_};
+  }
+  for (keys %done_uri) {
+    delete $done_uri{$_};
+  }
+
 }
 
 sub process_sameas_uri {
@@ -159,20 +181,20 @@ sub process_sameas_uri {
       print "Skipping ", $s->{'o'}->{'value'}, "\n" if $debug;
     }
   }
-  
-}
-
-# STEP 8
-# Display all the data we now have for the chosen person
-if ( $debug ) {
-  print "Here is what we know now:\n";
-  my @datawithsameas = get_data_with_sameas($missing_persons[$chosen_person]->{'uri'});
-  foreach my $i (@datawithsameas) {
-    if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
-    if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+ 
+  # STEP 8
+  # Display all the data we now have for the chosen person
+  if ( $debug ) {
+    print "Here is what we know now:\n";
+    my @datawithsameas = get_data_with_sameas( $olduri );
+    foreach my $i (@datawithsameas) {
+      if ( $i->{'p'} ) { print "<", $i->{'p'}, "> "; }
+      if ( $i->{'o'} ) { print "<", $i->{'o'}, ">"; }
+      print "\n";
+    }
     print "\n";
   }
-  print "\n";
+  
 }
 
 # Subroutines
@@ -299,19 +321,21 @@ sub sparqlQuery {
 
 # Get commandline options
 sub get_options {
-  my $config = '';
-  my $sameas = '';
-  my $debug  = '';
-  my $help   = '';
+  my $config      = '';
+  my $interactive = '';
+  my $sameas      = '';
+  my $debug       = '';
+  my $help        = '';
 
   GetOptions(
-    'c|config=s' => \$config, 
-    's|sameas!'  => \$sameas,
-    'd|debug!'   => \$debug,
-    'h|?|help'   => \$help
+    'c|config=s'     => \$config, 
+    'i|interactive!' => \$interactive, 
+    's|sameas!'      => \$sameas,
+    'd|debug!'       => \$debug,
+    'h|?|help'       => \$help
   );
   
   pod2usage(-exitval => 0) if $help;
 
-  return ($config, $sameas, $debug);
+  return ($config, $interactive, $sameas, $debug);
 }
