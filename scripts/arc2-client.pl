@@ -5,16 +5,13 @@
 #   and stored in a triplestore with data from other source
 # - The SPARQL-queries involved in that process
 
-use CGI qw/:standard/;
-use LWP::UserAgent;
-use URI;
 use Data::Dumper;
-use JSON;
 use YAML::Syck qw'LoadFile';
 use Getopt::Long;
 use Pod::Usage;
 use Modern::Perl;
 use diagnostics;
+use Koha::LinkedData;
 
 my ($configfile, $sameas, $debug) = get_options();
 
@@ -95,7 +92,7 @@ UNION
   { ?s foaf:name "' . $uninverted_name . '" . }
 }';
 print $query if $debug;
-my $data = sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
+my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
 foreach my $t ( @{$data} ) {
   $waiting_uri{$t->{'s'}->{'value'}}++;
 }
@@ -125,7 +122,7 @@ sub process_sameas_uri {
 <' . $olduri . '> owl:sameAs <' . $newuri . '> .  
 }';
   print $query if $debug || $sameas;
-  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
   # TODO Check the results of this operation
   print Dumper $data if $debug;
   
@@ -134,7 +131,7 @@ sub process_sameas_uri {
   print "Loading $newuri\n" if $debug;
   my $loadquery = "LOAD <$newuri>";
   print $loadquery if $debug;
-  my $loaded = sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  my $loaded = Koha::LinkedData::sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
   # TODO Check the results of this operation
   print "Loaded $loaded triples from $newuri\n";
 
@@ -148,7 +145,7 @@ sub process_sameas_uri {
   GRAPH <' . $newuri . '> { <' . $newuri . '> owl:sameAs ?o . }
   }';
   print $sameasquery, "\n" if $debug;
-  my $sameasdata = sparqlQuery($sameasquery, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $sameasdata = Koha::LinkedData::sparqlQuery($sameasquery, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   print Dumper $sameasdata if $debug;
   my $sameascount = @{$sameasdata};
   print "Found $sameascount sameAs\n" if $debug;
@@ -188,7 +185,7 @@ SELECT ?p ?o WHERE {
   <' . $uri . '> owl:sameAs ?id . 
   ?id ?p ?o .
 }';
-  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   my @out;
   foreach my $t ( @{$data} ) {
     my %data;
@@ -220,7 +217,7 @@ SELECT * {
   UNION 
   { ?s ?p <' . $uri . '> } 
 }';
-  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   my @out;
   foreach my $t ( @{$data} ) {
     my %triple;
@@ -246,7 +243,7 @@ SELECT ?uri ?name WHERE {
 }
 LIMIT ' . $config->{'person_without_sameas_limit'};
 
-  my $data = sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
   my @out;
   foreach my $p ( @{$data} ) {
     my %person;
@@ -255,48 +252,6 @@ LIMIT ' . $config->{'person_without_sameas_limit'};
     push(@out, \%person);
   }
   return @out;
-}
-
-sub sparqlQuery {
-  my $sparql     = shift;
-  my $baseURL    = shift;
-  my $baseURLkey = shift;
-  my $method     = shift;
-
-  my %params=(
-    'query'  => $sparql,
-    'output' => 'json',
-    'key'    => $baseURLkey,
-  );
-
-  my $ua = LWP::UserAgent->new;
-  $ua->agent("semantikoha");
-  my $res = '';
-  if ($method eq 'get') {
-    my $url = URI->new($baseURL);
-    $url->query_form(%params);
-    $res = $ua->get($url);
-  } elsif ($method eq 'post') {
-    $res = $ua->post($baseURL, Content => \%params);
-  }
-  
-  if ($res->is_success) {
-    print $res->decoded_content if $debug;
-  } else {
-    print $res->status_line, "\n";
-  }
-  
-  my $str = $res->content;
-
-  print Dumper $str if $debug;
-  
-  my $data = decode_json($str);
-
-  if ( $sparql =~ m/^load/i ) {
-    return $data->{'inserted'};
-  }
-  
-  return $data->{'results'}->{'bindings'};
 }
 
 # Get commandline options
