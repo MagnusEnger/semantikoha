@@ -53,7 +53,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   }
 }';
 
-  my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
+  my $data = Koha::LinkedData::cgi_sparql($query);
   my $vars = {
     'data' => $data,
   };
@@ -68,8 +68,8 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
     SELECT * WHERE {
     GRAPH ?g { <' . $uri . '> ?p ?o . }
   }';
-  my $alldata = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
-
+  my $alldata = Koha::LinkedData::cgi_sparql($query);
+  warn Dumper $alldata;
   my $vars = {
     'alldata' => $alldata,
   };

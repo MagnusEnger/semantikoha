@@ -3,7 +3,7 @@
 <h2>Raw data:</h2>
 <table>
 <tr><th>?g</th><th>?p</th><th>?o</th></tr>
-[% FOREACH d IN data %]
+[% FOREACH d IN alldata %]
   <tr>
   <td>[% d.g.value %]</td>
   <td>[% d.p.value %]</td>

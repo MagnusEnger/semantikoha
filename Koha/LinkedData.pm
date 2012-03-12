@@ -21,6 +21,17 @@ use JSON;
 use Modern::Perl;
 use diagnostics;
 
+sub cgi_sparql {
+
+  my $sparql = shift;
+
+  use YAML::Syck;
+  my ($config) = LoadFile('../config/config.yaml');
+
+  return sparqlQuery($sparql, $config->{'base_url'}, $config->{'base_url_key'}, 'get', undef);
+
+}
+
 sub sparqlQuery {
   my $sparql     = shift;
   my $baseURL    = shift;
