@@ -53,24 +53,30 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   }
 }';
 
+  my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
+  my $vars = {
+    'data' => $data,
+  };
+  $tt2->process($template, $vars) || die $tt2->error();
+
 } elsif ( $q->param('uri') ) {
 
   my $uri = $q->param('uri');
   $query = '
-SELECT * WHERE {
-  GRAPH ?g { <' . $uri . '> ?p ?o . }
-}';
+    SELECT * WHERE {
+    GRAPH ?g { <' . $uri . '> ?p ?o . }
+  }';
+
+  # print "$query\n";
+
+  my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
+
+  my $vars = {
+    'data' => $data,
+  };
+  $tt2->process($template, $vars) || die $tt2->error();
 
 }
-
-# print "$query\n";
-
-my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
-
-my $vars = {
-  'data' => $data,
-};
-$tt2->process($template, $vars) || die $tt2->error();
 
 # Get foaf:name where it exists
 # PREFIX foaf: <http://xmlns.com/foaf/0.1/>
