@@ -22,9 +22,11 @@ my ($configfile, $sameas, $debug) = get_options();
 if ( $configfile ne '' && !-e $configfile) {
   die "Couldn't find YAML file $configfile\n";
 }
-if ( -e 'config.yaml' ) {
+if ( -e 'config/config.yaml' ) {
   # Use the default config file if one is not given on the command line
-  $configfile = 'config.yaml';
+  $configfile = 'config/config.yaml';
+} else {
+  die "No configfile found!\n";
 }
 print "YAML: $configfile\n" if $debug;
 
