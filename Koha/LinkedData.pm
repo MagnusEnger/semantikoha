@@ -28,7 +28,7 @@ sub cgi_sparql {
   use YAML::Syck;
   my ($config) = LoadFile('../config/config.yaml');
 
-  return sparqlQuery($sparql, $config->{'base_url'}, $config->{'base_url_key'}, 'get', undef);
+  return sparqlQuery($sparql, $config->{'base_url'}, undef, 'get', undef);
 
 }
 
