@@ -1,0 +1,20 @@
+<!-- kohafooter.tt -->
+
+ <div class="ft">
+ <p style="text-align: center;">Gratis <a href="http://koha-community.org/">Koha</a> til privat bruk, <a href="http://libriotech.no/gratis-koha">levert av Libriotech</a>.</p> </div>
+ </div>
+
+ <div id="changelanguage" class="ft">
+  <div class="lang"><strong>Spr&aring;k:&nbsp;</strong></div>
+  <div class="lang">
+  |  </div>
+  <div class="lang">
+     <a href="/cgi-bin/koha/opac-changelanguage.pl?language=en">English</a>
+     |  </div>
+
+  <div class="lang">
+     Norsk bokm&#229;l     </div>
+     </div>
+  </body>
+</html>
+ 

@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="nb-NO" xml:lang="nb-NO" xmlns="http://www.w3.org/1999/xhtml"> <head>
+<title>
+ ESME katalog </title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Koha 3.0604001" /> <!-- leave this for stats -->
+<link rel="shortcut icon" href="/opac-tmpl/prog/nb-NO/includes/favicon.ico" type="image/x-icon" />
+ <link rel="stylesheet" type="text/css" href="/opac-tmpl/prog/nb-NO/css/opac.css" />    <link rel="stylesheet" type="text/css" media="print" href="/opac-tmpl/prog/nb-NO/css/print.css" />
+<link rel="stylesheet" type="text/css" href="/opac-tmpl/prog/nb-NO/lib/jquery/plugins/ui.tabs.css" />
+
+<!-- yui js --> 
+<script type="text/javascript" src="/opac-tmpl/prog/nb-NO/lib/yui/utilities/utilities.js"></script> 
+
+<script type="text/javascript" src="/opac-tmpl/prog/nb-NO/lib/yui/container/container-min.js"></script> 
+<script type="text/javascript" src="/opac-tmpl/prog/nb-NO/lib/yui/menu/menu-min.js"></script> 
+<script type="text/javascript" src="/opac-tmpl/prog/nb-NO/lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="/opac-tmpl/prog/nb-NO/lib/jquery/plugins/ui.tabs.js"></script>
+<script type="text/javascript" src="/opac-tmpl/prog/nb-NO/lib/jquery/plugins/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="javascript" src="/opac-tmpl/prog/nb-NO/js/script.js"></script>
+  <script type="text/javascript" language="javascript" src="/opac-tmpl/prog/nb-NO/js/basket.js">
+
+</script>
+
+<script type="text/javascript" language="javascript">
+	//<![CDATA[
+    var MSG_BASKET_EMPTY = _("Kurven din er tom");
+    var MSG_RECORD_IN_BASKET = _("Dette eksemplaret ligger allerede i handlekurven");
+    var MSG_RECORD_ADDED = _("Dette eksemplaret er lagt i handlekurven");
+    var MSG_NRECORDS_ADDED = _(" eksemplar(er) er lagt i kurven");
+    var MSG_NRECORDS_IN_BASKET = _("er allerede i kurven");
+    var MSG_NO_RECORD_SELECTED = _("Ingen lån ble valgt");
+    var MSG_NO_RECORD_ADDED = _("Ingen eksemplarer ble lagt opp i handlekurven");
+    var MSG_CONFIRM_DEL_BASKET = _("Er du sikker på at du vil tømme handlekurven?");
+    var MSG_CONFIRM_DEL_RECORDS = _("Er du sikker på at du vil fjerne de valgte eksemplarene?");
+	$("#cartDetails").ready(function(){ $("#cmspan").html("<a href=\"#\" id=\"cartmenulink\" class=\"\"><i><\/i><span><i><\/i><span><\/span><span id=\"carticon\"></span> "+_("Kurv")+"<span id=\"basketcount\"><\/span><\/span><\/a>"); }); 
+    var MSG_TAGS_DISABLED = _("Beklager, tagger kan ikke brukes her.");
+    var MSG_TAG_ALL_BAD = _("Feil! Taggen inneholdt kun kode. Den ble derfor ikke lagt til. PRøv igjen med ren tekst. ");
+    var MSG_ILLEGAL_PARAMETER = _("Feil! Ulovlig parameter");
+    var MSG_TAG_SCRUBBED = _("NB: Taggen din inneholdt tegn som har blitt fjernet. Taggen ble lagret som ");
+    var MSG_ADD_TAG_FAILED = _("Feil! Lagring av tagg feilet for");
+    var MSG_ADD_TAG_FAILED_NOTE = _("NB: Du kan bare gi en post en tagg en gang. Sjekk 'Mine tagger' for å se hvilke tagger du har brukt. ");
+    var MSG_DELETE_TAG_FAILED = _("Feil! Du kan ikke slette taggen");
+    var MSG_DELETE_TAG_FAILED_NOTE = _("Merk: Du kan bare slette egne tagger.")
+    var MSG_LOGIN_REQUIRED = _("Du må være logget inn for å legge til tagger.");
+    var MSG_TAGS_ADDED = _("Tagger lagt til: ");
+    var MSG_TAGS_DELETED = _("Tagger lagt til: ");
+    var MSG_TAGS_ERRORS = _("Feil: ");
+    var MSG_MULTI_ADD_TAG_FAILED = _("Kunne ikke legge til en eller flere tagger.");
+	
+	
+	jQuery(document).ready(function () {
+  var id = $(".unapi-id").attr("title");
+  $.get("/sem.pl", { id: id },
+    function(html){
+      $("#bibliodescriptions").prepend(html);
+    }
+  ); 
+});
+	//]]>
+
+</script><script type="text/javascript" language="javascript" src="/opac-tmpl/prog/nb-NO/js/basket.js">
+</script>
+<script type="text/javascript" language="javascript" src="/opac-tmpl/prog/nb-NO/js/tags.js"></script>   <script type="text/javascript" language="javascript" src="/opac-tmpl/prog/nb-NO/js/openlibrary.js"></script>
+<script type="text/javascript" language="javascript">
+//<![CDATA[
+var NO_OL_JACKET = _("Ingen omslagsbilder er tilgjengelige.");
+//]]>
+</script>
+  <link rel="unapi-server" type="application/xml" title="unAPI" href="http://esme.priv.bibkat.no/cgi-bin/koha/unapi" />
+  </head>
+<body id="opac-main">
+<div id="doc3" class="yui-t1"> <div id="bd">
+<div id="header-wrapper"><div id="members">
+  <ul>
+
+ <li><a href="/cgi-bin/koha/opac-user.pl">Logg inn p&aring; din konto</a></li>    </ul> 
+  </div>
+  <!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://stats.libriotech.no/" : "http://stats.libriotech.no/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://stats.libriotech.no/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->  <div id="opac-main-search" class="yui-g">
+  <h1 id="libraryname">
+ <a href="/cgi-bin/koha/opac-main.pl">ESME</a></h1>
+
+<div id="fluid">
+
+ <div id="fluid-offset">
+<form name="searchform" method="get" action="/cgi-bin/koha/opac-search.pl" id="searchform">
+ <label for="masthead_search" class="left"> S&oslash;k    </label>
+
+ <select name="idx" id="masthead_search" class="left">
+  <option value="">Bibliotekkatalog</option>
+   <option value="ti">Tittel</option>
+
+   <option value="au">Forfatter</option>
+   <option value="su">Emne</option>
+   <option value="nb">ISBN</option>
+   <option value="se">Serier</option>
+   <option value="callnum">Hylleplass</option>
+ </select>
+
+ <input type="text" id = "transl1" name="q" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
+      <input value="OK" type="submit" id="searchsubmit" class="left" />
+<span id="cmspan"></span> <a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink" class=""><i></i><span><i></i><span></span>Lister </span></a> </form>
+ <div id="moresearches">
+<a href="/cgi-bin/koha/opac-search.pl">Avansert s&oslash;k</a>
+ <span class="pipe"> | </span><a href="/cgi-bin/koha/opac-authorities-home.pl">Bla etter forfatter eller emne</a>  <span class="pipe"> | </span><a href="/cgi-bin/koha/opac-tags.pl">Emnesky</a>      </div>
+
+ </div>
+</div>
+
+ <!-- OpacPublic --> 
+
+<div id="cartDetails">Handlekurven er tom.</div>  <div id="listsmenu" class="yuimenu" style="display: none">
+ <div class="bd">
+ <h4>Offentlige lister</h4>
+  <ul class="first-of-type">
+  <li class="yuimenuitem"><a href="/cgi-bin/koha/opac-shelves.pl?viewshelf=2&amp;sortfield=title">Lest i 2012</a></li>
+
+  <li class="yuimenuitem"><a href="/cgi-bin/koha/opac-shelves.pl?viewshelf=1&amp;sortfield=">Sett i 2012</a></li>
+  </ul> 
+    <ul class="first-of-type"><li><a href="/cgi-bin/koha/opac-user.pl">Logg inn for å lage din egen liste</a></li></ul>
+   </div>
+</div><!-- /listmenu /virtualshelves -->
+
+<div id="listsDetails"></div>
+</div>
+</div>
+<div id="breadcrumbs" class="yui-g">
+</div>
+ <div id="yui-main">
+
+<!-- kohaheader.tt -->

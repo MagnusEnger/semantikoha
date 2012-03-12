@@ -1,0 +1,17 @@
+<div style="border: 1px solid black; margin: 1em; padding: 1em; border-radius: 1em;">
+
+<ul>
+[% FOREACH d IN data %]
+  <li><a href="/cgi-bin/koha/opac-view.pl?uri=[% d.uri.value | uri %]">[% d.name.value | html %]</a></li>
+[% END %]
+</ul>
+
+<p>
+[% FOREACH d IN data %]
+  [% IF d.thumb.value %]
+  <a href="/cgi-bin/koha/opac-view.pl?uri=[% d.uri.value | uri %]"><img src="[% d.thumb.value %]" title="[% d.name.value | html %]" style="border-radius: 1em; max-height: 100px; max-width: 100px;" /></a>
+  [% END %]
+[% END %]
+</p>
+
+</div>
