@@ -63,6 +63,14 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
 
   my $uri = $q->param('uri');
 
+  my $imgquery = '
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?img WHERE {
+<' . $uri . '> owl:sameAs ?o . 
+?o foaf:depiction ?img
+}';
+  my $imgdata = Koha::LinkedData::cgi_sparql($imgquery);
+
   # Get all data about the URI, as a general fallback
   $query = '
     SELECT * WHERE {
@@ -71,6 +79,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   my $alldata = Koha::LinkedData::cgi_sparql($query);
   warn Dumper $alldata;
   my $vars = {
+    'imgdata' => $imgdata,
     'alldata' => $alldata,
   };
   $tt2->process($template, $vars) || die $tt2->error();

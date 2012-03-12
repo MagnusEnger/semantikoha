@@ -1,5 +1,9 @@
 [% INCLUDE 'kohaheader.tt' %]
 
+[% FOREACH i IN imgdata %]
+  <img src="[% i.img.value %]" style="border-radius: 1em; max-height: 100px; max-width: 100px;" /> 
+[% END %]
+
 <h2>Raw data:</h2>
 <table>
 <tr><th>?g</th><th>?p</th><th>?o</th></tr>
