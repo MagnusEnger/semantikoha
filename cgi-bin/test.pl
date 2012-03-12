@@ -62,17 +62,16 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
 } elsif ( $q->param('uri') ) {
 
   my $uri = $q->param('uri');
+
+  # Get all data about the URI, as a general fallback
   $query = '
     SELECT * WHERE {
     GRAPH ?g { <' . $uri . '> ?p ?o . }
   }';
-
-  # print "$query\n";
-
-  my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
+  my $alldata = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
 
   my $vars = {
-    'data' => $data,
+    'alldata' => $alldata,
   };
   $tt2->process($template, $vars) || die $tt2->error();
 
