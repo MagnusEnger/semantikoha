@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+use lib '../';
+
 use CGI;
 use LWP::UserAgent;
 use URI;
@@ -7,6 +9,7 @@ use JSON;
 use Template;
 use Data::Dumper;
 use Modern::Perl;
+use Koha::LinkedData;
 
 my $q = CGI->new;
 
@@ -62,7 +65,7 @@ SELECT * WHERE {
 
 # print "$query\n";
 
-my $data = sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
+my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.libriotech.no/semantikoha/', '', 'get');
 
 my $vars = {
   'data' => $data,
@@ -76,40 +79,3 @@ $tt2->process($template, $vars) || die $tt2->error();
 #     OPTIONAL { ?o foaf:name ?name } .
 # }
 
-# Subroutines
-
-sub sparqlQuery {
-  my $sparql     = shift;
-  my $baseURL    = shift;
-  my $baseURLkey = shift;
-  my $method     = shift;
-
-  my %params=(
-    'query'  => $sparql,
-    'output' => 'json',
-    'key'    => $baseURLkey,
-  );
-
-  my $ua = LWP::UserAgent->new;
-  $ua->agent("semantikoha");
-  my $res = '';
-  if ($method eq 'get') {
-    my $url = URI->new($baseURL);
-    $url->query_form(%params);
-    $res = $ua->get($url);
-  } elsif ($method eq 'post') {
-    $res = $ua->post($baseURL, Content => \%params);
-  }
-  
-  if ($res->is_success) {
-    # print $res->decoded_content;
-  } else {
-    print $res->status_line, "\n";
-  }
-  
-  my $str = $res->content;
-
-  my $data = decode_json($str);
-  
-  return $data->{'results'}->{'bindings'};
-}
