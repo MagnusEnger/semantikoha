@@ -64,13 +64,37 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
 
   my $uri = $q->param('uri');
 
+  # Images
   my $imgquery = '
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT ?img WHERE {
-<' . $uri . '> owl:sameAs ?o . 
-?o foaf:depiction ?img
-}';
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  SELECT ?img WHERE {
+    <' . $uri . '> owl:sameAs ?o . 
+    ?o foaf:depiction ?img
+  }';
   my $imgdata = Koha::LinkedData::cgi_sparql($imgquery);
+
+  # Big FIXME - This should not be hardcoded, but configurable
+  # through the triplestore itself. But this a start...
+
+  # Inluenced by
+  my $infbyquery = '
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  SELECT DISTINCT ?influencedby WHERE {
+    <' . $uri . '> <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
+    ?sameAs <http://dbpedia.org/ontology/influencedBy> ?influencedby
+    OPTIONAL { ?influencedby <http://xmlns.com/foaf/0.1/name> ?name . }
+  }';
+  my $infbydata = Koha::LinkedData::cgi_sparql($infbyquery);
+
+  # Inluenced
+  my $infquery = '
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  SELECT DISTINCT ?influenced ?name WHERE {
+    <' . $uri . '> <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
+    ?sameAs <http://dbpedia.org/property/influenced> ?influenced .
+    OPTIONAL { ?influenced <http://xmlns.com/foaf/0.1/name> ?name . }
+  }';
+  my $infdata = Koha::LinkedData::cgi_sparql($infquery);
 
   # Get all data about the URI, as a general fallback
   $query = '
@@ -80,8 +104,10 @@ SELECT ?img WHERE {
   my $alldata = Koha::LinkedData::cgi_sparql($query);
   warn Dumper $alldata;
   my $vars = {
-    'imgdata' => $imgdata,
-    'alldata' => $alldata,
+    'infbydata' => $infbydata,
+    'infdata'   => $infdata,
+    'imgdata'   => $imgdata,
+    'alldata'   => $alldata,
   };
   $tt2->process($template, $vars) || die $tt2->error();
 

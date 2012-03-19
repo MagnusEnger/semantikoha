@@ -4,6 +4,24 @@
   <img src="[% i.img.value %]" style="border-radius: 1em; max-height: 100px; max-width: 100px;" /> 
 [% END %]
 
+[% IF infbydata.0 %]
+<h2>Influenced by</h2>
+<ul>
+  [% FOREACH i IN infbydata %]
+  <li><a href="?uri=[% i.influencedby.value %]">[% i.influencedby.value %]</a> [% i.name.value %]</li>
+  [% END %]
+</ul>
+[% END %]
+
+[% IF infdata.0 %]
+<h2>Influenced</h2>
+<ul>
+  [% FOREACH i IN infdata %]
+  <li><a href="?uri=[% i.influenced.value %]">[% i.influenced.value %]</a> [% i.name.value %]</li>
+  [% END %]
+</ul>
+[% END %]
+
 <h2>Raw data:</h2>
 <table>
 <tr><th>?g</th><th>?p</th><th>?o</th></tr>
