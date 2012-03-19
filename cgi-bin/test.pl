@@ -55,7 +55,8 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
 
   my $data = Koha::LinkedData::cgi_sparql($query);
   my $vars = {
-    'data' => $data,
+    'rec_id' => $id,
+    'data'   => $data,
   };
   $tt2->process($template, $vars) || die $tt2->error();
 
