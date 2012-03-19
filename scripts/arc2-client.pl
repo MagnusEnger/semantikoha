@@ -45,7 +45,15 @@ if ( $missing_count == 0 ) {
 
 my $person_count = 0;
 foreach my $p ( @missing_persons ) {
-  print $person_count, " ", $p->{'name'}, "\t", $p->{'uri'}, "\n";
+  print $person_count, " ";
+  if( $p->{'name'} ) {
+    print $p->{'name'};
+  }
+  print "\t";
+  if ( $p->{'uri'} ) {
+    print $p->{'uri'};
+  }
+  print "\n";
   $person_count++;
 }
 print "\n";
@@ -233,10 +241,11 @@ sub get_person_without_sameas {
 
   my $query = '
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX radatana: <http://def.bibsys.no/xmlns/radatana/1.0#>
 SELECT ?uri ?name WHERE {
   GRAPH <' . $config->{'default_graph'} . '> {
     ?uri a foaf:Person .
-    OPTIONAL { ?uri foaf:name ?name . }
+    OPTIONAL { ?uri radatana:catalogueName ?name . } 
     OPTIONAL { ?uri owl:sameAs ?id . }
     FILTER(!bound(?id))
   }
