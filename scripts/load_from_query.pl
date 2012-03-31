@@ -18,8 +18,8 @@ my $langs = Koha::LinkedData::get_sparql($query);
 
 foreach my $lang ( @{$langs} ) {
 
-  if ($lang->{'lang'}->{'type'} && $lang->{'lang'}->{'type'} eq 'uri') {
-    Koha::LinkedData::Internal::verbose_load($lang->{'lang'}->{'value'});
+  if ($lang->{'uri'}->{'type'} && $lang->{'uri'}->{'type'} eq 'uri') {
+    Koha::LinkedData::Internal::verbose_load($lang->{'uri'}->{'value'});
   }
 
 }
