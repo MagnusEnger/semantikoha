@@ -35,7 +35,7 @@ sub sparqlQuery {
   my ($sparql, $method, $baseURL, $baseURLkey, $debug) = @_;
 
   # Read the default YAML file
-  my ($config) = LoadFile('./config/config.yaml');
+  my ($config) = LoadFile('../config/config.yaml');
   
   if ( !$baseURL ) {
     # Use the default baseURL

@@ -5,6 +5,8 @@
 #   and stored in a triplestore with data from other source
 # - The SPARQL-queries involved in that process
 
+use lib '../';
+
 use Data::Dumper;
 use YAML::Syck qw'LoadFile';
 use Getopt::Long;
@@ -19,9 +21,9 @@ my ($configfile, $sameas, $debug) = get_options();
 if ( $configfile ne '' && !-e $configfile) {
   die "Couldn't find YAML file $configfile\n";
 }
-if ( -e 'config/config.yaml' ) {
+if ( -e '../config/config.yaml' ) {
   # Use the default config file if one is not given on the command line
-  $configfile = 'config/config.yaml';
+  $configfile = '../config/config.yaml';
 } else {
   die "No configfile found!\n";
 }

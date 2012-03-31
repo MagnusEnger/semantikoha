@@ -3,6 +3,8 @@
 # LOAD the URI given as the first argument on the command line
 # Synopsis: load.pl <uri>
 
+use lib '../';
+
 use Koha::LinkedData::Internal;
 use Modern::Perl;
 
