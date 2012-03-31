@@ -1,0 +1,18 @@
+[%#
+
+Find influenced/influencedBy-relations that have not been LOADed.
+
+%]
+
+SELECT DISTINCT ?uri WHERE {
+  {
+  ?s <http://dbpedia.org/ontology/influencedBy> ?uri
+  OPTIONAL { ?uri <http://xmlns.com/foaf/0.1/name> ?name . }
+  }
+UNION
+  {
+  ?s <http://dbpedia.org/ontology/influenced> ?uri
+  OPTIONAL { ?uri <http://xmlns.com/foaf/0.1/name> ?name . }
+  }
+  FILTER (!bound(?name))
+}
