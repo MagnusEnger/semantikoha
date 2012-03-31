@@ -11,6 +11,16 @@ my ($config) = LoadFile('../config/config.yaml');
 # Usage:
 # load(uri)
 
+sub verbose_load {
+
+  my ($newuri) = @_;
+
+  print "Loading $newuri\n";
+  my $loaded = Koha::LinkedData::Internal::load($newuri);
+  print "Loaded $loaded triples from $newuri\n";
+
+}
+
 sub load {
 
   my ($uri) = @_;
