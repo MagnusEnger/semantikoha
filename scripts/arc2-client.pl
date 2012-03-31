@@ -100,7 +100,7 @@ UNION
   { ?s foaf:name "' . $uninverted_name . '" . }
 }';
 print $query if $debug;
-my $data = Koha::LinkedData::sparqlQuery($query, 'http://data.bibsys.no/data/authority', '', 'get');
+my $data = Koha::LinkedData::sparqlQuery($query, 'get', 'http://data.bibsys.no/data/authority', '');
 foreach my $t ( @{$data} ) {
   $waiting_uri{$t->{'s'}->{'value'}}++;
 }
@@ -130,7 +130,7 @@ sub process_sameas_uri {
 <' . $olduri . '> owl:sameAs <' . $newuri . '> .  
 }';
   print $query if $debug || $sameas;
-  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  my $data = Koha::LinkedData::sparqlQuery($query, 'post');
   # TODO Check the results of this operation
   print Dumper $data if $debug;
   
@@ -139,7 +139,7 @@ sub process_sameas_uri {
   print "Loading $newuri\n" if $debug;
   my $loadquery = "LOAD <$newuri>";
   print $loadquery if $debug;
-  my $loaded = Koha::LinkedData::sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  my $loaded = Koha::LinkedData::sparqlQuery($loadquery, 'post');
   # TODO Check the results of this operation
   print "Loaded $loaded triples from $newuri\n";
 
@@ -153,7 +153,7 @@ sub process_sameas_uri {
   GRAPH <' . $newuri . '> { <' . $newuri . '> owl:sameAs ?o . }
   }';
   print $sameasquery, "\n" if $debug;
-  my $sameasdata = Koha::LinkedData::sparqlQuery($sameasquery, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $sameasdata = Koha::LinkedData::sparqlQuery($sameasquery, 'get');
   print Dumper $sameasdata if $debug;
   my $sameascount = @{$sameasdata};
   print "Found $sameascount sameAs\n" if $debug;
@@ -193,7 +193,7 @@ SELECT ?p ?o WHERE {
   <' . $uri . '> owl:sameAs ?id . 
   ?id ?p ?o .
 }';
-  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $data = Koha::LinkedData::sparqlQuery($query, 'get');
   my @out;
   foreach my $t ( @{$data} ) {
     my %data;
@@ -225,7 +225,7 @@ SELECT * {
   UNION 
   { ?s ?p <' . $uri . '> } 
 }';
-  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $data = Koha::LinkedData::sparqlQuery($query, 'get');
   my @out;
   foreach my $t ( @{$data} ) {
     my %triple;
@@ -252,7 +252,7 @@ SELECT ?uri ?name WHERE {
 }
 LIMIT ' . $config->{'person_without_sameas_limit'};
 
-  my $data = Koha::LinkedData::sparqlQuery($query, $config->{'base_url'}, $config->{'base_url_key'}, 'get');
+  my $data = Koha::LinkedData::sparqlQuery($query, 'get');
   my @out;
   foreach my $p ( @{$data} ) {
     my %person;

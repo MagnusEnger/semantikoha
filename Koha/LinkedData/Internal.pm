@@ -7,14 +7,18 @@ use Modern::Perl;
 # Read the YAML file
 my ($config) = LoadFile('./config/config.yaml');
 
+# Load a URI into our own triplestore
+# Usage:
+# load(uri)
+
 sub load {
 
-  my $uri = shift;
+  my ($uri) = @_;
   
   # TODO Check that $uri is a valid URI
 
   my $loadquery = "LOAD <$uri>";
-  Koha::LinkedData::sparqlQuery($loadquery, $config->{'base_url'}, $config->{'base_url_key'}, 'post');
+  Koha::LinkedData::sparqlQuery($loadquery, 'post');
 
 }
 

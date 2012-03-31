@@ -18,27 +18,36 @@ use LWP::UserAgent;
 use URI;
 use Data::Dumper;
 use JSON;
+use YAML::Syck;
+use Template;
 use Modern::Perl;
 use diagnostics;
 
 sub cgi_sparql {
 
   my $sparql = shift;
-
-  use YAML::Syck;
-  my ($config) = LoadFile('../config/config.yaml');
-
-  return sparqlQuery($sparql, $config->{'base_url'}, undef, 'get', undef);
+  return sparqlQuery($sparql, 'get');
 
 }
 
 sub sparqlQuery {
-  my $sparql     = shift;
-  my $baseURL    = shift;
-  my $baseURLkey = shift;
-  my $method     = shift;
-  my $debug      = shift;
+  
+  my ($sparql, $method, $baseURL, $baseURLkey, $debug) = @_;
 
+  # Read the default YAML file
+  my ($config) = LoadFile('./config/config.yaml');
+  
+  if ( !$baseURL ) {
+    # Use the default baseURL
+    $baseURL = $config->{'base_url'};
+    if ( !$baseURLkey ) {
+      # Only set baseURLkey to the default if we are going to talk
+      # to our own baseURL, otherwise we will be sending our password
+      # to remote baseURls!
+      $baseURLkey = $config->{'base_url_key'};
+    }
+  } 
+  
   my %params=(
     'query'  => $sparql,
     'output' => 'json',
