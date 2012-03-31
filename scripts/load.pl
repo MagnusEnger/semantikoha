@@ -16,6 +16,4 @@ if ($ARGV[0]) {
   die "No URI given\n";
 }
 
-print "Loading $newuri\n";
-my $loaded = Koha::LinkedData::Internal::load($newuri);
-print "Loaded $loaded triples from $newuri\n";
+Koha::LinkedData::Internal::verbose_load($newuri);
