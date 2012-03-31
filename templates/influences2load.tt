@@ -2,6 +2,8 @@
 
 Find influenced/influencedBy-relations that have not been LOADed.
 
+FIXME: Works for influenced, not influencedBy.
+
 %]
 
 SELECT DISTINCT ?uri WHERE {
