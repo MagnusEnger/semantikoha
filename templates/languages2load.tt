@@ -1,0 +1,11 @@
+[%#
+
+Find languages that have not been LOADed yet. 
+
+%]
+
+SELECT DISTINCT ?lang ?label WHERE {
+  ?s <http://purl.org/dc/terms/language> ?lang . 
+  OPTIONAL { ?lang rdfs:label ?label . }
+  FILTER (!bound(?label))
+}
