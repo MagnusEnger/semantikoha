@@ -23,6 +23,13 @@ use Template;
 use Modern::Perl;
 use diagnostics;
 
+sub get_sparql {
+
+  my $sparql = shift;
+  return sparqlQuery($sparql, 'get');
+
+}
+
 sub cgi_sparql {
 
   my $sparql = shift;
