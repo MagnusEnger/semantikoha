@@ -79,7 +79,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   # Inluenced by
   my $infbyquery = '
   PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-  SELECT DISTINCT ?influencedby WHERE {
+  SELECT DISTINCT ?influencedby ?name WHERE {
     <' . $uri . '> <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
     ?sameAs <http://dbpedia.org/ontology/influencedBy> ?influencedby
     OPTIONAL { ?influencedby <http://xmlns.com/foaf/0.1/name> ?name . }

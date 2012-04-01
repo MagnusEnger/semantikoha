@@ -8,7 +8,11 @@
 <h2>Influenced by</h2>
 <ul>
   [% FOREACH i IN infbydata %]
-  <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.influencedby.value %]</a> [% i.name.value | html %]</li>
+    [% IF i.name.value %]
+      <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.name.value | html %]</a></li>
+    [% ELSE %]
+      <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.influencedby.value %]</a></li>
+    [% END %]
   [% END %]
 </ul>
 [% END %]
@@ -17,7 +21,11 @@
 <h2>Influenced</h2>
 <ul>
   [% FOREACH i IN infdata %]
-  <li><a href="?uri=[% i.influenced.value | uri %]">[% i.influenced.value %]</a> [% i.name.value | html %]</li>
+    [% IF i.name.value %]
+      <li><a href="?uri=[% i.influenced.value | uri %]">[% i.name.value | html %]</a></li>
+    [% ELSE %]
+      <li><a href="?uri=[% i.influenced.value | uri %]">[% i.influenced.value %]</a></li>
+    [% END %]
   [% END %]
 </ul>
 [% END %]
