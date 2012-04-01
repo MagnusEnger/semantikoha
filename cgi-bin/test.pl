@@ -76,6 +76,17 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   # Big FIXME - This should not be hardcoded, but configurable
   # through the triplestore itself. But this a start...
 
+  #Personal information
+  my $personalquery = '
+  PREFIX dbp: <http://dbpedia.org/property/>
+  SELECT * WHERE {
+    <' . $uri . '> dbp:name ?name . 
+    OPTIONAL { <' . $uri . '> dbp:birthDate ?birthdate }
+    OPTIONAL { <' . $uri . '> dbp:deathDate ?deathdate }
+    FILTER (!(regex(?name, ",")))
+  }';
+  my $personaldata = Koha::LinkedData::cgi_sparql($personalquery);
+  
   # Inluenced by
   my $infbyquery = '
   PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -104,6 +115,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   my $alldata = Koha::LinkedData::cgi_sparql($query);
   warn Dumper $alldata;
   my $vars = {
+    'personal'  => $personaldata,
     'infbydata' => $infbydata,
     'infdata'   => $infdata,
     'imgdata'   => $imgdata,
