@@ -1,7 +1,11 @@
 #!/usr/bin/perl -w 
 
 # Find language URIs that have not been LOADed and LOAD them
-# Synopsis: language.pl 
+# Synopsis: language.pl -q influences
+# 
+# This will look for templates2load.tt and the query will be run 
+# against the triplestore and result in a list of URIs that need to
+# be LOADed. Then the URIs are loaded. 
 
 use lib '../';
 
