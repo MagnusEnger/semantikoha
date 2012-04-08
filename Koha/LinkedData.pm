@@ -23,6 +23,15 @@ use Template;
 use Modern::Perl;
 use diagnostics;
 
+use parent qw( Exporter );
+require Exporter;
+our @ISA = ( "Exporter" );
+our @EXPORT = qw( sparql ); 
+our @EXPORT_OK = qw( get_query get_sparql load verbose_load ); 
+our %EXPORT_TAGS = ( 
+  'update' => [ qw( load verbose_load ) ],
+);
+
 # Read the default YAML file
 my ($config) = LoadFile('../config/config.yaml');
 
@@ -79,7 +88,7 @@ sub verbose_load {
   my ($newuri) = @_;
 
   print "Loading $newuri\n";
-  my $loaded = Koha::LinkedData::Internal::load($newuri);
+  my $loaded = load($newuri);
   print "Loaded $loaded triples from $newuri\n";
 
 }
@@ -91,11 +100,11 @@ sub load {
   # TODO Check that $uri is a valid URI
 
   my $loadquery = "LOAD <$uri>";
-  Koha::LinkedData::sparqlQuery($loadquery, 'post');
+  _sparql_query($loadquery, 'post');
 
 }
 
-sub sparqlQuery {
+sub _sparql_query {
   
   my ($sparql, $method, $baseURL, $baseURLkey, $debug) = @_;
   

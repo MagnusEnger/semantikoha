@@ -5,7 +5,7 @@
 
 use lib '../';
 
-use Koha::LinkedData::Internal;
+use Koha::LinkedData qw( :update );
 use Modern::Perl;
 
 my $newuri = '';
@@ -16,4 +16,4 @@ if ($ARGV[0]) {
   die "No URI given\n";
 }
 
-Koha::LinkedData::Internal::verbose_load($newuri);
+verbose_load($newuri);
