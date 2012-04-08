@@ -1,0 +1,13 @@
+[%#
+
+This query automatically says 
+A sameAs B
+and
+B sameAs A
+
+%]
+
+INSERT INTO <[% config.enh_graph %]> {
+  <[% args.uri1 %]> owl:sameAs <[% args.uri2 %]> .
+  <[% args.uri2 %]> owl:sameAs <[% args.uri1 %]> .
+}

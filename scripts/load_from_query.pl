@@ -17,7 +17,7 @@ use Data::Dumper;
 
 my ($q, $debug) = get_options();
 
-my $query = Koha::LinkedData::get_query($q);
+my $query = Koha::LinkedData::get_query($q . '2load.tt');
 my $langs = Koha::LinkedData::get_sparql($query);
 
 foreach my $lang ( @{$langs} ) {

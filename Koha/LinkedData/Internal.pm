@@ -11,6 +11,13 @@ my ($config) = LoadFile('../config/config.yaml');
 # Usage:
 # load(uri)
 
+sub sparql_insert {
+
+  my ($q) = @_;
+  return Koha::LinkedData::sparqlQuery($q, 'post');
+
+}
+
 sub verbose_load {
 
   my ($newuri) = @_;

@@ -23,6 +23,9 @@ use Template;
 use Modern::Perl;
 use diagnostics;
 
+# Read the default YAML file
+my ($config) = LoadFile('../config/config.yaml');
+
 # Configure Template Toolkit
 my $ttconfig = {
   INCLUDE_PATH => '../templates/', # or list ref
@@ -35,22 +38,20 @@ my $tt2 = Template->new($ttconfig) || die Template->error(), "\n";
 
 sub get_query {
 
-  my ($queryid) = @_;
-  my $template = '../templates/' . $queryid . '2load.tt';
-  if ( -e $template ) {
-    my ( $query, $vars );
-    $tt2->process( $template, $vars, \$query ) || die $tt2->error();
-    return $query;
-  } else {
-    return 0;
-  }
-  
+  my ($template, $args) = @_;
+  my ( $query );
+  my $vars = {
+    'args'   => $args,
+    'config' => $config,
+  };
+  $tt2->process( $template, $vars, \$query ) || die $tt2->error();
+  return $query;
 
 }
 
 sub get_sparql {
 
-  my $sparql = shift;
+  my $sparql = @_;
   return sparqlQuery($sparql, 'get');
 
 }
@@ -65,9 +66,6 @@ sub cgi_sparql {
 sub sparqlQuery {
   
   my ($sparql, $method, $baseURL, $baseURLkey, $debug) = @_;
-
-  # Read the default YAML file
-  my ($config) = LoadFile('../config/config.yaml');
   
   if ( !$baseURL ) {
     # Use the default baseURL
