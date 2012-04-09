@@ -5,8 +5,8 @@
 
 use lib '../';
 
-use Koha::LinkedData::Internal;
-use Data::Validate::URI qw(is_uri);
+use Koha::SPARQL qw( :DEFAULT :update );
+use Data::Validate::URI qw( is_uri );
 use Getopt::Long;
 use Pod::Usage;
 use Modern::Perl;
@@ -38,9 +38,9 @@ my $args = {
   'uri2' => $uri2,
 };
 
-my $query = Koha::LinkedData::get_query('insert_sameas.query', $args);
+my $query = get_query('insert_sameas.query', $args);
 print $query if $debug;
-my $res = Koha::LinkedData::Internal::sparql_insert($query);
+my $res = sparql_insert($query);
 print Dumper $res if $debug;
 
 # Get commandline options
