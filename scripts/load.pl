@@ -5,7 +5,7 @@
 
 use lib '../';
 
-use Koha::LinkedData qw( :update );
+use Koha::SPARQL qw( :update );
 use Modern::Perl;
 
 my $newuri = '';
