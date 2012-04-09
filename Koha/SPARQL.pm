@@ -26,10 +26,10 @@ use diagnostics;
 use parent qw( Exporter );
 require Exporter;
 our @ISA = ( "Exporter" );
-our @EXPORT = qw( sparql ); 
-our @EXPORT_OK = qw( get_query get_sparql load verbose_load ); 
+our @EXPORT = qw( get_sparql ); 
+our @EXPORT_OK = qw( get_query get_sparql load verbose_load sparql_external sparql_insert ); 
 our %EXPORT_TAGS = ( 
-  'update' => [ qw( load verbose_load ) ],
+  'update' => [ qw( load verbose_load sparql_insert ) ],
 );
 
 # Read the default YAML file
@@ -60,15 +60,22 @@ sub get_query {
 
 sub get_sparql {
 
-  my $sparql = @_;
-  return sparqlQuery($sparql, 'get');
+  my ( $sparql_query ) = @_;
+  return _sparql_query($sparql_query, 'get');
+
+}
+
+sub sparql_external {
+
+  my ( $sparql_query, $baseurl ) = @_;
+  return _sparql_query($sparql_query, 'get', $baseurl);
 
 }
 
 sub cgi_sparql {
 
   my $sparql = shift;
-  return sparqlQuery($sparql, 'get');
+  return _sparql_query($sparql, 'get');
 
 }
 
@@ -79,7 +86,7 @@ sub cgi_sparql {
 sub sparql_insert {
 
   my ($q) = @_;
-  return Koha::LinkedData::sparqlQuery($q, 'post');
+  return _sparql_query($q, 'post');
 
 }
 
