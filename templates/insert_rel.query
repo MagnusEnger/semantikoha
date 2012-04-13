@@ -1,0 +1,19 @@
+[%#
+
+This query says 
+A <relationship> B
+and
+B <inverse relationship> A
+
+It is completely based on data found in config/prefixes.yaml. 
+
+%]
+
+[% FOREACH key IN args.prefixes.keys %]
+PREFIX [% key %]: <[% args.prefixes.$key %]>
+[% END %]
+
+INSERT INTO <[% config.enh_graph %]> {
+  <[% args.uri1 %]> [% args.rel %] <[% args.uri2 %]> .
+  <[% args.uri2 %]> [% args.inv %] <[% args.uri1 %]> .
+}
