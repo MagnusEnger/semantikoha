@@ -34,6 +34,7 @@ our @EXPORT_OK = qw(
   load 
   verbose_load 
   sparql_insert
+  get_prefixes
 ); 
 our %EXPORT_TAGS = ( 
   update => [ qw( 
@@ -45,6 +46,14 @@ our %EXPORT_TAGS = (
 
 # Read the default YAML file
 my ($config) = LoadFile('../config/config.yaml');
+
+# Read lists of prefixes and relations
+sub get_prefixes {
+
+  my ($prefixes, $relations) = LoadFile('../config/prefixes.yaml');
+  return ($prefixes, $relations);
+  
+}
 
 # Configure Template Toolkit
 my $ttconfig = {

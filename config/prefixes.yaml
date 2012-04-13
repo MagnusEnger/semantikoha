@@ -1,0 +1,16 @@
+---
+
+# Prefixes 
+
+bibo: http://purl.org/ontology/bibo/
+
+---
+
+# Relations
+
+sameas:
+  rel: owl:sameAs
+  inv: owl:sameAs
+cites:
+  rel: bibo:cites
+  inv: bibo:citedBy
