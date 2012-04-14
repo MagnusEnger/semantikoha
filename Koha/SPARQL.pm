@@ -35,6 +35,7 @@ our @EXPORT_OK = qw(
   verbose_load 
   sparql_insert
   get_prefixes
+  cgi_sparql
 ); 
 our %EXPORT_TAGS = ( 
   update => [ qw( 

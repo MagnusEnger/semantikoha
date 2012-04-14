@@ -9,7 +9,7 @@ use JSON;
 use Template;
 use Data::Dumper;
 use Modern::Perl;
-use Koha::LinkedData;
+use Koha::SPARQL qw( cgi_sparql );
 
 my $q = CGI->new;
 
@@ -53,7 +53,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   }
 }';
 
-  my $data = Koha::LinkedData::cgi_sparql($query);
+  my $data = cgi_sparql($query);
   my $vars = {
     'rec_id' => $id,
     'data'   => $data,
@@ -71,7 +71,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
     <' . $uri . '> owl:sameAs ?o . 
     ?o foaf:depiction ?img
   }';
-  my $imgdata = Koha::LinkedData::cgi_sparql($imgquery);
+  my $imgdata = cgi_sparql($imgquery);
 
   # Big FIXME - This should not be hardcoded, but configurable
   # through the triplestore itself. But this a start...
@@ -85,7 +85,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
     OPTIONAL { <' . $uri . '> dbp:deathDate ?deathdate }
     FILTER (!(regex(?name, ",")))
   }';
-  my $personaldata = Koha::LinkedData::cgi_sparql($personalquery);
+  my $personaldata = cgi_sparql($personalquery);
   
   # Inluenced by
   my $infbyquery = '
@@ -95,7 +95,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
     ?sameAs <http://dbpedia.org/ontology/influencedBy> ?influencedby
     OPTIONAL { ?influencedby <http://xmlns.com/foaf/0.1/name> ?name . }
   }';
-  my $infbydata = Koha::LinkedData::cgi_sparql($infbyquery);
+  my $infbydata = cgi_sparql($infbyquery);
 
   # Inluenced
   my $infquery = '
@@ -105,14 +105,14 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
     ?sameAs <http://dbpedia.org/property/influenced> ?influenced .
     OPTIONAL { ?influenced <http://xmlns.com/foaf/0.1/name> ?name . }
   }';
-  my $infdata = Koha::LinkedData::cgi_sparql($infquery);
+  my $infdata = cgi_sparql($infquery);
 
   # Get all data about the URI, as a general fallback
   $query = '
     SELECT * WHERE {
     GRAPH ?g { <' . $uri . '> ?p ?o . }
   }';
-  my $alldata = Koha::LinkedData::cgi_sparql($query);
+  my $alldata = cgi_sparql($query);
   warn Dumper $alldata;
   my $vars = {
     'personal'  => $personaldata,
