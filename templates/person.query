@@ -1,7 +1,8 @@
 PREFIX dbp: <http://dbpedia.org/property/>
 SELECT * WHERE {
-  <[% args.uri %]> dbp:name ?name . 
-  OPTIONAL { <[% args.uri %]> dbp:birthDate ?birthdate }
-  OPTIONAL { <[% args.uri %]> dbp:deathDate ?deathdate }
+  <[% args.uri %]> owl:sameAs ?o .
+  ?o dbp:name ?name . 
+  OPTIONAL { ?o dbp:birthDate ?birthdate }
+  OPTIONAL { ?o dbp:deathDate ?deathdate }
   FILTER (!(regex(?name, ",")))
 }
