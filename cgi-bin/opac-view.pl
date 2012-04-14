@@ -9,7 +9,7 @@ use JSON;
 use Template;
 use Data::Dumper;
 use Modern::Perl;
-use Koha::SPARQL qw( cgi_sparql );
+use Koha::SPARQL qw( get_query cgi_sparql );
 
 my $q = CGI->new;
 
@@ -64,48 +64,12 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
 
   my $uri = $q->param('uri');
 
-  # Images
-  my $imgquery = '
-  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-  SELECT ?img WHERE {
-    <' . $uri . '> owl:sameAs ?o . 
-    ?o foaf:depiction ?img
-  }';
-  my $imgdata = cgi_sparql($imgquery);
+  my $args = {
+    'uri' => $uri,
+  };
 
   # Big FIXME - This should not be hardcoded, but configurable
   # through the triplestore itself. But this a start...
-
-  #Personal information
-  my $personalquery = '
-  PREFIX dbp: <http://dbpedia.org/property/>
-  SELECT * WHERE {
-    <' . $uri . '> dbp:name ?name . 
-    OPTIONAL { <' . $uri . '> dbp:birthDate ?birthdate }
-    OPTIONAL { <' . $uri . '> dbp:deathDate ?deathdate }
-    FILTER (!(regex(?name, ",")))
-  }';
-  my $personaldata = cgi_sparql($personalquery);
-  
-  # Inluenced by
-  my $infbyquery = '
-  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-  SELECT DISTINCT ?influencedby ?name WHERE {
-    <' . $uri . '> <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
-    ?sameAs <http://dbpedia.org/ontology/influencedBy> ?influencedby
-    OPTIONAL { ?influencedby <http://xmlns.com/foaf/0.1/name> ?name . }
-  }';
-  my $infbydata = cgi_sparql($infbyquery);
-
-  # Inluenced
-  my $infquery = '
-  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-  SELECT DISTINCT ?influenced ?name WHERE {
-    <' . $uri . '> <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
-    ?sameAs <http://dbpedia.org/property/influenced> ?influenced .
-    OPTIONAL { ?influenced <http://xmlns.com/foaf/0.1/name> ?name . }
-  }';
-  my $infdata = cgi_sparql($infquery);
 
   # Get all data about the URI, as a general fallback
   $query = '
@@ -115,10 +79,10 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   my $alldata = cgi_sparql($query);
   # warn Dumper $alldata;
   my $vars = {
-    'personal'  => $personaldata,
-    'infbydata' => $infbydata,
-    'infdata'   => $infdata,
-    'imgdata'   => $imgdata,
+    'personal'  => cgi_sparql(get_query('person.query', $args)),
+    'infbydata' => cgi_sparql(get_query('influencedby.query', $args)),
+    'infdata'   => cgi_sparql(get_query('influenced.query', $args)),
+    'imgdata'   => cgi_sparql(get_query('images.query', $args)),
     'alldata'   => $alldata,
   };
   $tt2->process($template, $vars) || die $tt2->error();
