@@ -124,11 +124,3 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   $tt2->process($template, $vars) || die $tt2->error();
 
 }
-
-# Get foaf:name where it exists
-# PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-# SELECT * WHERE {
-#     <http://esme.priv.bibkat.no/records/id_2> ?p ?o . 
-#     OPTIONAL { ?o foaf:name ?name } .
-# }
-
