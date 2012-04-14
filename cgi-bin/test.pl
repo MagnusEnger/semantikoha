@@ -113,7 +113,7 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
     GRAPH ?g { <' . $uri . '> ?p ?o . }
   }';
   my $alldata = cgi_sparql($query);
-  warn Dumper $alldata;
+  # warn Dumper $alldata;
   my $vars = {
     'personal'  => $personaldata,
     'infbydata' => $infbydata,
