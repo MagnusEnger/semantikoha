@@ -1,0 +1,4 @@
+SELECT ?query WHERE {
+  <[% uri %]> a ?type . 
+  ?type <http://esme.priv.bibkat.no/ui/hasquery> ?query . 
+}

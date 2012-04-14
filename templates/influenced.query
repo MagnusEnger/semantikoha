@@ -1,0 +1,6 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?influenced ?name WHERE {
+  <[% args.uri %]> <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
+  ?sameAs <http://dbpedia.org/property/influenced> ?influenced .
+  OPTIONAL { ?influenced <http://xmlns.com/foaf/0.1/name> ?name . }
+}
