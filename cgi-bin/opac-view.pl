@@ -69,6 +69,12 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   };
   my %ttvars;
 
+  # Get the main template
+  my $tpl = cgi_sparql(get_query('type_to_template.query', $args));
+  if ($tpl && $tpl->[0]) {
+    $template = $tpl->[0]->{'template'}->{'value'} . '.tt';
+  }
+
   # Get all the queries for the types of the URI we are dealing with
   # and execute them, saving the results in %ttvars
   my $queries = cgi_sparql(get_query('type_to_queries.query', $args));
@@ -88,6 +94,6 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   # Debug
   # print Dumper %ttvars;
 
-  $tt2->process('Person.tt', \%ttvars) || die $tt2->error();
+  $tt2->process($template, \%ttvars) || die $tt2->error();
 
 }

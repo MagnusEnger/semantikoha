@@ -1,0 +1,4 @@
+SELECT ?template WHERE {
+  <[% args.uri %]> a ?type . 
+  ?type <http://esme.priv.bibkat.no/ui/hastemplate> ?template . 
+}
