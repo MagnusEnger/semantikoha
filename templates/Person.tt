@@ -1,0 +1,6 @@
+[% INCLUDE 'kohaheader.tt' %]
+
+[% INCLUDE 'person.tt' %]
+[% INCLUDE 'images.tt' %]
+
+[% INCLUDE 'kohafooter.tt' %]

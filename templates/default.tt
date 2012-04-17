@@ -1,18 +1,5 @@
 [% INCLUDE 'kohaheader.tt' %]
 
-<h1>[% personal.0.name.value %]</h1>
-
-[% IF personal.0.birthdate.value %]
-  <p>Born: [% personal.0.birthdate.value %]</p>
-[% END %]
-[% IF personal.0.deathdate.value %]
-  <p>Dead: [% personal.0.deathdate.value %]</p>
-[% END %]
-
-[% FOREACH i IN imgdata %]
-  <img src="[% i.img.value %]" style="border-radius: 1em; max-height: 100px; max-width: 100px;" /> 
-[% END %]
-
 [% IF infbydata.0 %]
 <h2>Influenced by</h2>
 <ul>

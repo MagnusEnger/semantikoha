@@ -67,24 +67,27 @@ SELECT DISTINCT ?uri ?name ?thumb WHERE {
   my $args = {
     'uri' => $uri,
   };
+  my %ttvars;
 
-  # Big FIXME - This should not be hardcoded, but configurable
-  # through the triplestore itself. But this a start...
+  # Get all the queries for the types of the URI we are dealing with
+  # and execute them, saving the results in %ttvars
+  my $queries = cgi_sparql(get_query('type_to_queries.query', $args));
+  foreach my $query ( @{$queries} ) {
+    # print get_query( $query->{'query'}->{'value'} . '.query', $args );
+    $ttvars{ $query->{'query'}->{'value'} } = cgi_sparql( get_query( $query->{'query'}->{'value'} . '.query', $args ) );
+  }
 
   # Get all data about the URI, as a general fallback
-  $query = '
+  # FIXME Create a tmeplate for this
+  my $allquery = '
     SELECT * WHERE {
     GRAPH ?g { <' . $uri . '> ?p ?o . }
   }';
-  my $alldata = cgi_sparql($query);
-  # warn Dumper $alldata;
-  my $vars = {
-    'personal'  => cgi_sparql(get_query('person.query', $args)),
-    'infbydata' => cgi_sparql(get_query('influencedby.query', $args)),
-    'infdata'   => cgi_sparql(get_query('influenced.query', $args)),
-    'imgdata'   => cgi_sparql(get_query('images.query', $args)),
-    'alldata'   => $alldata,
-  };
-  $tt2->process($template, $vars) || die $tt2->error();
+  $ttvars{'alldata'} = cgi_sparql($allquery);
+
+  # Debug
+  # print Dumper %ttvars;
+
+  $tt2->process('Person.tt', \%ttvars) || die $tt2->error();
 
 }

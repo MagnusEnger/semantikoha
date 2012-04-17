@@ -1,0 +1,4 @@
+[% FOREACH i IN images %]
+  <img src="[% i.img.value %]" style="border-radius: 1em; max-height: 100px; max-width: 100px;" />
+[% END %]
+

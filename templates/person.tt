@@ -1,0 +1,9 @@
+<h1>[% person.0.name.value %]</h1>
+
+[% IF person.0.birthdate.value %]
+  <p>Born: [% person.0.birthdate.value %]</p>
+[% END %]
+[% IF person.0.deathdate.value %]
+  <p>Dead: [% person.0.deathdate.value %]</p>
+[% END %]
+
