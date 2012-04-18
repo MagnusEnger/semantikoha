@@ -2,5 +2,13 @@
 
 [% INCLUDE 'person.tt' %]
 [% INCLUDE 'images.tt' %]
+[% INCLUDE 'influencedby.tt' %]
+[% INCLUDE 'influenced.tt' %]
+
+<hr/>
+
+<p>Here is the raw data, as a help during development.</p>
+
+[% INCLUDE 'rawdata.tt' %]
 
 [% INCLUDE 'kohafooter.tt' %]

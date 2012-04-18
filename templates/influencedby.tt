@@ -1,0 +1,12 @@
+[% IF influencedby.0 %]
+<h2>Influenced by</h2>
+<ul>
+  [% FOREACH i IN influencedby %]
+    [% IF i.name.value %]
+      <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.name.value | html %]</a></li>
+    [% ELSE %]
+      <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.influencedby.value %]</a></li>
+    [% END %]
+  [% END %]
+</ul>
+[% END %]
