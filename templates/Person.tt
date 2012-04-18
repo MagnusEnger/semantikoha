@@ -2,6 +2,7 @@
 
 [% INCLUDE 'person.tt' %]
 [% INCLUDE 'images.tt' %]
+[% INCLUDE 'created.tt' %]
 [% INCLUDE 'influencedby.tt' %]
 [% INCLUDE 'influenced.tt' %]
 
