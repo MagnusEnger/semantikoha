@@ -1,5 +1,11 @@
 PREFIX dct: <http://purl.org/dc/terms/>
-SELECT * WHERE {
-  ?work dct:creator <[% args.uri %]> . 
+SELECT ?work ?title WHERE {
+  {
+  ?work dct:creator <[% args.uri %]> .
   ?work dct:title ?title .
+} UNION {
+  <[% args.uri %]> owl:sameAs ?person . 
+  ?work dct:creator ?person .
+  ?work dct:title ?title .
+  }
 }
