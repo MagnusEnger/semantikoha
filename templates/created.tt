@@ -1,0 +1,8 @@
+[% IF created.0 %]
+<h2>Created</h2>
+<ul>
+  [% FOREACH c IN created %]
+      <li><a href="?uri=[% c.work.value | uri %]">[% c.title.value | html %]</a></li>
+  [% END %]
+</ul>
+[% END %]
