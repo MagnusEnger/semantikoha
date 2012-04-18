@@ -1,0 +1,17 @@
+<h2>Raw data:</h2>
+<table>
+<tr><th>?g</th><th>?p</th><th>?o</th></tr>
+[% FOREACH d IN alldata %]
+  <tr>
+  <td>[% d.g.value %]</td>
+  <td>[% d.p.value %]</td>
+  <td>
+    [% IF d.o.type == 'uri' %]
+      <a href="?uri=[% d.o.value | uri %]">[% d.o.value %]</a> [<a href="[% d.o.value %]" title="Look up URI">x</a>]
+    [% ELSE %]
+      [% d.o.value %]
+    [% END %]
+  </td>
+  </tr>
+[% END %]
+</table>

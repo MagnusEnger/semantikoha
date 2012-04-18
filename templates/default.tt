@@ -1,47 +1,7 @@
 [% INCLUDE 'kohaheader.tt' %]
 
-[% IF infbydata.0 %]
-<h2>Influenced by</h2>
-<ul>
-  [% FOREACH i IN infbydata %]
-    [% IF i.name.value %]
-      <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.name.value | html %]</a></li>
-    [% ELSE %]
-      <li><a href="?uri=[% i.influencedby.value | uri %]">[% i.influencedby.value %]</a></li>
-    [% END %]
-  [% END %]
-</ul>
-[% END %]
+<p>Sorry, this information can not be displayed properly, yet.</p>
 
-[% IF infdata.0 %]
-<h2>Influenced</h2>
-<ul>
-  [% FOREACH i IN infdata %]
-    [% IF i.name.value %]
-      <li><a href="?uri=[% i.influenced.value | uri %]">[% i.name.value | html %]</a></li>
-    [% ELSE %]
-      <li><a href="?uri=[% i.influenced.value | uri %]">[% i.influenced.value %]</a></li>
-    [% END %]
-  [% END %]
-</ul>
-[% END %]
-
-<h2>Raw data:</h2>
-<table>
-<tr><th>?g</th><th>?p</th><th>?o</th></tr>
-[% FOREACH d IN alldata %]
-  <tr>
-  <td>[% d.g.value %]</td>
-  <td>[% d.p.value %]</td>
-  <td>
-    [% IF d.o.type == 'uri' %]
-      <a href="?uri=[% d.o.value | uri %]">[% d.o.value %]</a> [<a href="[% d.o.value %]" title="Look up URI">x</a>]
-    [% ELSE %]
-      [% d.o.value %]
-    [% END %]
-  </td>
-  </tr>
-[% END %]
-</table>
+[% INCLUDE 'rawdata.tt' %]
 
 [% INCLUDE 'kohafooter.tt' %]
