@@ -1,7 +1,7 @@
 <!-- kohafooter.tt -->
 
 <hr />
-<p>This page is part of SemantiKoha, exploring how semantic/linked data can be used in Koha. <a href="https://github.com/MagnusEnger/semantikoha">Source code</a>.</p>
+<p>This page is part of SemantiKoha, exploring how semantic/linked data can be used in Koha. <a href="https://github.com/MagnusEnger/semantikoha">Source code</a>. <a href="https://github.com/MagnusEnger/semantikoha/blob/master/README.txt">README</a>.</p>
 
  <div class="ft">
  <p style="text-align: center;">Gratis <a href="http://koha-community.org/">Koha</a> til privat bruk, <a href="http://libriotech.no/gratis-koha">levert av Libriotech</a>.</p> </div>
