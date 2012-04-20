@@ -1,0 +1,11 @@
+[% INCLUDE 'kohaheader.tt' %]
+
+[% INCLUDE 'document.tt' %]
+
+<hr/>
+
+<p>Here is the raw data, as a help during development.</p>
+
+[% INCLUDE 'rawdata.tt' %]
+
+[% INCLUDE 'kohafooter.tt' %]

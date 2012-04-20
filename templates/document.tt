@@ -1,0 +1,15 @@
+[% IF document.0.title.value %]
+<h1>[% document.0.title.value %]</h1>
+[% END %]
+
+[% IF document.0.statementOfResponsibility.value %]
+<p>Responsibility: [% document.0.statementOfResponsibility.value %]</p>
+[% END %]
+
+[% IF document.0.issued.value %]
+<p>Issued: [% document.0.issued.value %]</p>
+[% END %]
+
+[% IF document.0.numPages.value %]
+<p>Pages: [% document.0.numPages.value %]</p>
+[% END %]

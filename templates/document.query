@@ -1,0 +1,11 @@
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX rd: <http://rdvocab.info/Elements/>
+PREFIX bibo: <http://purl.org/ontology/bibo/>
+SELECT * WHERE {
+  GRAPH <http://esme.priv.bibkat.no/records/> { 
+    <http://esme.priv.bibkat.no/records/id_108> dct:title ?title ;
+    rd:statementOfResponsibility ?statementOfResponsibility ;
+    dct:issued ?issued ;
+    bibo:numPages ?numPages .
+  }
+}
