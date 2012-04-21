@@ -54,7 +54,7 @@ my $args = {
   'relations' => $relations,  
 };
 
-my $query = get_query('insert_sameas.query', $args);
+my $query = get_query('insert_rel.query', $args);
 print $query if $debug;
 my $res = sparql_insert($query);
 print Dumper $res if $debug;
