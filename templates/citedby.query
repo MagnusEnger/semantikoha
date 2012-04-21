@@ -1,0 +1,6 @@
+PREFIX bibo: <http://purl.org/ontology/bibo/>
+PREFIX dct: <http://purl.org/dc/terms/>
+SELECT * WHERE {
+  <[% args.uri %]> bibo:citedBy ?uri . 
+  ?uri dct:title ?title .
+}

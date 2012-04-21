@@ -1,6 +1,8 @@
 [% INCLUDE 'kohaheader.tt' %]
 
 [% INCLUDE 'document.tt' %]
+[% INCLUDE 'cites.tt' %]
+[% INCLUDE 'citedby.tt' %]
 
 <hr/>
 
