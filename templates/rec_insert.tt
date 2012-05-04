@@ -14,6 +14,6 @@
 [% END %]
 </p>
 
-<p><a href="/cgi-bin/koha/opac-view.pl?uri=http://esme.priv.bibkat.no/records/id_[% rec_id %]">View record</a></p>
+<p><a href="/cgi-bin/koha/opac-view.pl?uri=http://esme.priv.bibkat.no/bib/[% rec_id %]">View record</a></p>
 
 </div>
