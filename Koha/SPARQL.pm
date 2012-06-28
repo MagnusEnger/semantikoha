@@ -132,6 +132,9 @@ sub load {
 
 }
 
+# FIXME Can this be replaced with RDF::Query::Client?
+# http://search.cpan.org/~tobyink/RDF-Query-Client-0.110/lib/RDF/Query/Client.pm
+
 sub _sparql_query {
   
   my ($sparql, $method, $baseURL, $baseURLkey, $debug) = @_;
